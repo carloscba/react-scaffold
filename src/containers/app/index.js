@@ -13,9 +13,7 @@ class App extends Component{
                     <Menu />
                     <div className='container'>
                         <Route exact path='/' component={Home}/>
-                        <Route path='/step1' component={Step1}>
-                            <Route path='/step1/sub' component={Step1} />
-                        </Route>
+                        <Route path='/step1' component={Step1} />
                     </div>
                 </div>
             </Router>
