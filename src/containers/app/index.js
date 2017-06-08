@@ -6,6 +6,13 @@ import Menu from '../../components/menu'
 
 class App extends Component{
 
+    constructor(){
+        super();
+        this.state = {
+            access_token : '',
+            listFriends : ''
+        }
+    }
     render(){
         return(
             <Router>

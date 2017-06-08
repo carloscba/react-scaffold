@@ -5,30 +5,28 @@ import firebaseConfig from './firebaseConfig'
 firebase.initializeApp(firebaseConfig)
 
 class Fb extends Component{
-    
-    login = () => {
-        
+
+    login(){
         const provider = new firebase.auth.FacebookAuthProvider();
+        let _this = this;
         
         firebase.auth().signInWithPopup(provider).then(function(result) {
             var token = result.credential.accessToken;
             var user = result.user;
-            console.log(token, user);
+            _this.props.setToken(result.credential.accessToken);
         }).catch(function(error) {
-            console.log(error);
             // Handle Errors here.
             var errorCode = error.code;
             var errorMessage = error.message;
             var email = error.email;
             var credential = error.credential;
-        });        
-        console.log(firebase)
+        });
     }
 
     render(){
         return(
             <div>
-                <button onClick={ this.login }>Login with Facebook</button>
+                <button onClick={ this.login.bind(this) }>Login with Facebook</button>
             </div>
         )
     }
