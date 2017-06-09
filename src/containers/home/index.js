@@ -8,13 +8,15 @@ class Home extends Component{
     constructor(){
         super();
         this.state = {
-            accessToken : '456678'
+            accessToken : '',
+            providerData : ''
         }
     }
 
-    setToken(newAccessToken){
+    setToken(newAccessToken, newProviderData){
         this.setState({
-            accessToken : newAccessToken
+            accessToken : newAccessToken,
+            providerData : newProviderData
         });
     }
 
@@ -25,7 +27,7 @@ class Home extends Component{
                     <h2>Home</h2>
                     <Link to={'/step1'}>Iniciar</Link>
                     <Fb setToken = { this.setToken.bind(this) } />
-                    <Fbfriends accessToken={ this.state.accessToken } />
+                    <Fbfriends accessToken={ this.state.accessToken } providerData={ this.state.providerData }  />
                 </div>
             </div>
         )

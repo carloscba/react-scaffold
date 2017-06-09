@@ -8,12 +8,14 @@ class Fb extends Component{
 
     login(){
         const provider = new firebase.auth.FacebookAuthProvider();
-        let _this = this;
+        provider.addScope('read_custom_friendlists');
+        
+        const _this = this;
         
         firebase.auth().signInWithPopup(provider).then(function(result) {
-            var token = result.credential.accessToken;
-            var user = result.user;
-            _this.props.setToken(result.credential.accessToken);
+            
+            _this.props.setToken(result.credential.accessToken, result.user.providerData[0]);
+
         }).catch(function(error) {
             // Handle Errors here.
             var errorCode = error.code;
