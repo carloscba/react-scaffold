@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import Fb from '../../components/fb'
 import Fbfriends from '../../components/fbfriends'
+import UserMedia from '../../components/usermedia'
 
 class Home extends Component{
 
@@ -28,6 +29,7 @@ class Home extends Component{
                     <Link to={'/step1'}>Iniciar</Link>
                     <Fb setToken = { this.setToken.bind(this) } />
                     <Fbfriends accessToken={ this.state.accessToken } providerData={ this.state.providerData }  />
+                    <UserMedia />
                 </div>
             </div>
         )

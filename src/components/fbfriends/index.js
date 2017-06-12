@@ -8,7 +8,6 @@ class Fbfriends extends Component{
         this.state = {
             friends : null
         }
-
     }
 
     componentWillReceiveProps(nextProps){
