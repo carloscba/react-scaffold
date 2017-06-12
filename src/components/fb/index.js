@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import * as firebase from 'firebase'
-import firebaseConfig from './firebaseConfig'
+import firebaseConfig from '../../config/firebaseConfig'
 
 firebase.initializeApp(firebaseConfig)
 
