@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { BrowserRouter as Router, Route, link } from 'react-router-dom';
-import Home from '../home'
-import Step1 from '../step1'
-import Menu from '../../components/menu'
+import Home from './Home'
+import Step1 from './Step1'
+import Menu from '../components/Menu'
 
 class App extends Component{
 
