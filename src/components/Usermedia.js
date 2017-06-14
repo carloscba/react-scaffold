@@ -128,7 +128,7 @@ class UserMedia extends Component{
         </div>)
     } 
     renderUploadOptions(){
-        return (<div><Upload /></div>)
+        return (<div><Upload accept="video" /></div>)
     }     
 
     render(){
