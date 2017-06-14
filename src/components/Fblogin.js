@@ -23,6 +23,9 @@ class FbLogin extends Component{
             accessToken : null,
             userData : {}
         }
+        this.login = this.login.bind(this);
+        this.renderLoginButton = this.renderLoginButton.bind(this);
+        this.renderStartButton = this.renderStartButton.bind(this);
     }
 
     login(){
@@ -69,28 +72,23 @@ class FbLogin extends Component{
         });
     }
 
-    render(){
-        let layoutLogin = '';
-        
-        if(this.state.accessToken === null){
-            layoutLogin = <div>
-                <img src= { m8logo } className="fblogin__photo" />
-                <button className="btn btn-primary btn-block fblogin__button" onClick={ this.login.bind(this) }>Login with Facebook</button>
-            </div>
-        }else{
-            layoutLogin = <div>
-                <img src= { this.state.userData.photoURL } className="fblogin__photo" />
-                <button className="btn btn-success btn-block fblogin__button">{ this.state.userData.displayName }</button>
-            </div>
-        }
+    renderLoginButton(){
+        return (<div><img src= { m8logo } className="fblogin__photo" />
+                <button className="btn btn-primary btn-block fblogin__button" onClick={ this.login }>Login with Facebook</button></div>)
+    }
 
+    renderStartButton(){
+        return (<div><img src= { this.state.userData.photoURL } className="fblogin__photo" />
+               <button className="btn btn-success btn-block fblogin__button">{ this.state.userData.displayName }</button></div>) 
+    }
+
+    render(){
         return(
             <div className="fblogin">
-                { layoutLogin }
+                { (this.state.accessToken === null) ? this.renderLoginButton() : this.renderStartButton() }
             </div>
         )
     }
-
 }
 
 FbLogin.propTypes = propTypes;
