@@ -19,8 +19,8 @@ class App extends Component{
                 <div>
                     <Menu />
                     <div className='container'>
-                        <Route exact path='/' component={Home}/>
-                        <Route path='/step1' component={Step1} />
+                        <Route exact path='/' component={ Home }/>
+                        <Route path='/step1' component={ Step1 } />
                     </div>
                 </div>
             </Router>

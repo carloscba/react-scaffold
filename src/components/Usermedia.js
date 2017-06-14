@@ -128,7 +128,8 @@ class UserMedia extends Component{
         </div>)
     } 
     renderUploadOptions(){
-        return (<div><Upload accept="video" /></div>)
+        //return (<div><Upload accept="video" /></div>)
+        return (<div className="alert alert-danger" role="alert">Get user media is don't available</div>)
     }     
 
     render(){
