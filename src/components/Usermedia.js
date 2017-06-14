@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
-import * as firebase from 'firebase'
-import firebaseConfig from '../config/firebaseConfig'
+import * as firebase from 'firebase';
+import firebaseConfig from '../config/firebaseConfig';
+import Upload from '../components/Upload';
 
 class UserMedia extends Component{
        
@@ -8,6 +9,10 @@ class UserMedia extends Component{
         super();
         this.mediaRecorder;
 
+        let auth = firebase.auth();
+        console.log('auth', auth);
+
+        console.log('navigator.mediaDevices', navigator.mediaDevices);
         if (navigator.mediaDevices !== undefined) {
             this.setUserMedia()
         }else{
@@ -15,18 +20,25 @@ class UserMedia extends Component{
         }
 
         this.state = {
+            getUserMediaAvailable : false, 
             recDisabled : true
         }
+
+        this.setUserMedia = this.setUserMedia.bind(this);
+        this.setUpload = this.setUpload.bind(this);
+        this.startRecord = this.startRecord.bind(this);
+        this.stopRecord = this.stopRecord.bind(this);
+        this.renderVideoOptions = this.renderVideoOptions.bind(this);
+        this.renderUploadOptions = this.renderUploadOptions.bind(this);
     }
 
     setUserMedia(){
-        
         //list of constrains supported by browser
         var supportedConstraints = navigator.mediaDevices.getSupportedConstraints();
         console.log('supportedConstraints', supportedConstraints);
 
         const constraints = { 
-            audio: true, 
+            audio: false, 
             video: { 
                 width: 320, 
                 height: 250,
@@ -34,11 +46,18 @@ class UserMedia extends Component{
         }
 
         navigator.mediaDevices.getUserMedia(constraints).then(function(stream) {
+
+            console.log('stream available');
+            this.setState({
+                getUserMediaAvailable : true
+            })
+
             this.mediaRecorder = new MediaRecorder(stream);
             this.mediaRecorder.onstop = function(e) {
                 console.log('onstop')
             }
             this.mediaRecorder.ondataavailable = function(e) {
+                //Upload record
                 var auth =  firebase.auth();
                 var storageRef = firebase.storage().ref();
                 var uploadTask = storageRef.child('video/video.webm').put(e.data);
@@ -72,8 +91,16 @@ class UserMedia extends Component{
             }.bind(this);  
 
         }.bind(this)).catch(function(err) {
+            console.log('stream dont available');
+            this.setState({
+                getUserMediaAvailable : false
+            })            
             /* handle the error */
-        });
+        }.bind(this));
+    }
+
+    setUpload(){
+
     }
 
     startRecord(){
@@ -90,17 +117,22 @@ class UserMedia extends Component{
         }
         
         console.log('stopRecord');
-    }    
-    render(){
+    }   
 
-        return(
-            <div>
-                <h1>Media</h1>
-                <video id="videoPlayer"></video>
-                <button onClick={ this.startRecord.bind(this) } disabled = { this.state.recDisabled }>Rec</button>
-                <button onClick={ this.stopRecord.bind(this) } disabled = { this.state.recDisabled }>Stop</button>
-            </div>
-        )
+    renderVideoOptions(){
+        return (<div>
+            <h1>Media</h1>
+            <video id="videoPlayer"></video>
+            <button onClick={ this.startRecord } disabled = { this.state.recDisabled }>Rec</button>
+            <button onClick={ this.stopRecord } disabled = { this.state.recDisabled }>Stop</button>        
+        </div>)
+    } 
+    renderUploadOptions(){
+        return (<div><Upload /></div>)
+    }     
+
+    render(){
+        return(<div>{ (this.state.getUserMediaAvailable)  ? this.renderVideoOptions() : this.renderUploadOptions() }</div>);
     }
 
 }

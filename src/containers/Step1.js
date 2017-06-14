@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import Usermedia from '../components/Usermedia'
 
 class Step1 extends Component{
 
@@ -6,6 +7,7 @@ class Step1 extends Component{
         return(
             <div>
                 <h2>Step1</h2>
+                <Usermedia />
             </div>
         )
     }

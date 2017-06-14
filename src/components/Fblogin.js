@@ -36,40 +36,27 @@ class FbLogin extends Component{
             'display': 'page' 
         });
         
-        const _this = this;
-        
         firebase.auth().signInWithPopup(provider).then(function(result) {
+            //{uid: "", displayName: "", photoURL: "", email: "", providerId: "facebook.com" } 
             
-
-            /*
-            {
-                uid: "", 
-                displayName: "", 
-                photoURL: "", 
-                email: "", 
-                providerId: "facebook.com"
-            } 
-            */
             const userData = result.user.providerData[0]
-
             //Redirect
-            if(_this.props.postLogin){
-                document.location = _this.props.postLogin;
+            if(this.props.postLogin){
+                document.location = this.props.postLogin;
             }else{
-                _this.setState({
+                this.setState({
                     accessToken : result.credential.accessToken,
                     userData : userData
                 })
             }
-            //_this.props.setToken(result.credential.accessToken, result.user.providerData[0]);
 
-        }).catch(function(error) {
+        }.bind(this)).catch(function(error) {
             // Handle Errors here.
             var errorCode = error.code;
             var errorMessage = error.message;
             var email = error.email;
             var credential = error.credential;
-        });
+        }.bind(this));
     }
 
     renderLoginButton(){
