@@ -8,7 +8,8 @@ class Step1 extends Component{
         return(
             <div>
                 <h2>Step1</h2>
-                <Upload accept="video" index="0">Upload Video</Upload>
+                <Upload accept="image" index="0">Upload</Upload>
+                <br/>
                 <Usermedia />
             </div>
         )

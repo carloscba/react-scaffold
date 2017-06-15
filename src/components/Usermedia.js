@@ -2,15 +2,14 @@ import React, { Component } from 'react';
 import * as firebase from 'firebase';
 import firebaseConfig from '../config/firebaseConfig';
 import Upload from '../components/Upload';
+import Progressbar from './Progressbar';
+import Style from './Usermedia.css'
 
 class UserMedia extends Component{
        
     constructor(){
         super();
         this.mediaRecorder;
-
-        let auth = firebase.auth();
-        console.log('auth', auth);
 
         console.log('navigator.mediaDevices', navigator.mediaDevices);
         if (navigator.mediaDevices !== undefined) {
@@ -21,7 +20,10 @@ class UserMedia extends Component{
 
         this.state = {
             getUserMediaAvailable : false, 
-            recDisabled : true
+            recDisabled : true,
+            recording : false,
+            percentLoaded : 0,
+            percentRecord: 0
         }
 
         this.setUserMedia = this.setUserMedia.bind(this);
@@ -30,6 +32,8 @@ class UserMedia extends Component{
         this.stopRecord = this.stopRecord.bind(this);
         this.renderVideoOptions = this.renderVideoOptions.bind(this);
         this.renderUploadOptions = this.renderUploadOptions.bind(this);
+        this.countdown = this.countdown.bind(this);
+        this.timerStopRecord = this.timerStopRecord.bind(this);
     }
 
     setUserMedia(){
@@ -41,7 +45,7 @@ class UserMedia extends Component{
             audio: false, 
             video: { 
                 width: 320, 
-                height: 250,
+                height: 240,
             } 
         }
 
@@ -61,16 +65,24 @@ class UserMedia extends Component{
                 var auth =  firebase.auth();
                 var storageRef = firebase.storage().ref();
                 var uploadTask = storageRef.child('video/video.webm').put(e.data);
+
                 uploadTask.on('state_changed', function (snapshot) {
-                    console.info(snapshot);
-                }, function (error) {
+                    
+                    let currentPercent = Math.round((100 * snapshot.bytesTransferred)/snapshot.totalBytes);
+                    console.log('currentPercent', currentPercent);
+
+                    this.setState({
+                        percentLoaded : currentPercent
+                    })
+
+                }.bind(this), function (error) {
                     console.error(error);
-                }, function () {
+                }.bind(this), function () {
                     var downloadURL = uploadTask.snapshot.downloadURL;
                     console.log(downloadURL);
-                });                
+                }.bind(this));                
 
-            }
+            }.bind(this);
 
             console.log('this.mediaRecorder', typeof(this.mediaRecorder));
 
@@ -104,13 +116,41 @@ class UserMedia extends Component{
     }
 
     startRecord(){
+        
         console.log('this.mediaRecorder', this.mediaRecorder);
         if(typeof(this.mediaRecorder) === 'object'){
             this.mediaRecorder.start();
         }
+        this.timerStopRecord();
         
         console.log('startRecord');
     }
+
+    timerStopRecord(){
+        console.log('timerStopRecord');
+        const timeRecord = 8;
+        let timer = 0;
+        let currentPercent
+        let intervalStop = window.setInterval(function(){
+            
+            if(timer === timeRecord){
+                this.stopRecord();
+                this.setState({
+                    percentRecord : 100 
+                })                
+                clearInterval(intervalStop);
+            }else{
+                console.log(timer);
+                let currentPercent = Math.round((100 * timer)/timeRecord);
+                this.setState({
+                    percentRecord : currentPercent 
+                })
+                timer++;
+            }
+            
+        }.bind(this), 1000);        
+    }
+
     stopRecord(){
         if(typeof(this.mediaRecorder) === 'object'){
             this.mediaRecorder.stop();
@@ -119,12 +159,31 @@ class UserMedia extends Component{
         console.log('stopRecord');
     }   
 
+    countdown(){
+        let timer = 5;
+        let intervalID = window.setInterval(function(){
+            
+            if((timer) === 0){
+                this.startRecord();
+                clearInterval(intervalID);
+            }else{
+                console.log(timer);
+                timer--;
+            }
+            
+        }.bind(this), 1000);
+    }
+
     renderVideoOptions(){
+        //<button className="btn btn-danger btn-block" onClick={ this.stopRecord } disabled = { this.state.recDisabled }>Stop</button>        
         return (<div>
-            <h1>Media</h1>
-            <video id="videoPlayer"></video>
-            <button onClick={ this.startRecord } disabled = { this.state.recDisabled }>Rec</button>
-            <button onClick={ this.stopRecord } disabled = { this.state.recDisabled }>Stop</button>        
+            <div className="usermedia">
+                <video id="videoPlayer"></video>
+                <div className="overlay"></div>
+            </div>
+            <Progressbar percentLoaded = { this.state.percentRecord }/>
+            <Progressbar percentLoaded = { this.state.percentLoaded }/>
+            <button className="btn btn-danger btn-block" onClick={ this.countdown } disabled = { this.state.recDisabled }>Rec</button>  
         </div>)
     } 
     renderUploadOptions(){

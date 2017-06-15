@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
-import * as firebase from 'firebase'
-import firebaseConfig from '../config/firebaseConfig'
-import style from './Upload.css'
+import * as firebase from 'firebase';
+import firebaseConfig from '../config/firebaseConfig';
+import Progressbar from './Progressbar';
+import style from './Upload.css';
 
 class Upload extends Component{
 
@@ -66,17 +67,13 @@ class Upload extends Component{
 
     renderUploadInput(){
 
-        let divStyle = {
-            width: this.state.percentLoaded + '%',
-        };
-
         let uploadLayout;
         if(this.state.uploadPath === ''){
 
             if(!this.state.uploading){
                 uploadLayout = <div><input type="file" accept = { this.state.acceptFile } id="input" className="fileInput" /><button id="btnUpload" className="btn btn-primary btn-block">{ this.props.children }</button></div>
             }else{
-                uploadLayout = <div className="progress"><div className="progress-bar" role="progressbar" aria-valuenow={ this.state.percentLoaded } aria-valuemin="0" aria-valuemax="100" style={ divStyle }>{ this.state.percentLoaded }%</div></div>
+                uploadLayout = <div><Progressbar percentLoaded = { this.state.percentLoaded }/></div>
             }
 
         }else{
@@ -135,5 +132,4 @@ class Upload extends Component{
         }, false);
     }
 }
-
 export default Upload;
