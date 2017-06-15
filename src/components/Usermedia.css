@@ -11,3 +11,11 @@
     position: absolute;
     bottom: 0px;
 }
+
+.hide{
+    display: none;
+}
+
+.show{
+    display: block;
+}

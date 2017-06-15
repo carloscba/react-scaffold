@@ -2,7 +2,6 @@
   "name": "react-scaffold",
   "version": "0.1.0",
   "private": true,
-  "homepage" : "http://127.0.0.1/react-scaffold/build",
   "dependencies": {
     "axios": "^0.16.2",
     "firebase": "^4.1.2",

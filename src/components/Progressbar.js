@@ -5,11 +5,17 @@ class Progressbar extends Component{
 
     render(){
         
-        let divStyle = {
-            width: this.props.percentLoaded + '%',
+        let bar = {
+            width: this.props.percent + '%',
         };
+        let show = {
+            display : 'block'
+        }
+        let hide = {
+            display : 'none'
+        }        
 
-        return(<div className="progress"><div className="progress-bar" role="progressbar" aria-valuenow={ this.props.percentLoaded } aria-valuemin="0" aria-valuemax="100" style={ divStyle }>{ this.props.percentLoaded }%</div></div>);
+        return(<div className="progress" style={ (this.props.working) ? show : hide }><div className="progress-bar" role="progressbar" aria-valuenow={ this.props.percent } aria-valuemin="0" aria-valuemax="100" style={ bar }>{ this.props.percent }%</div></div>);
     }
 
 }

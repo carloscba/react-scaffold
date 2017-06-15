@@ -41,6 +41,7 @@ class Upload extends Component{
                 
                 let currentPercent = Math.round((100 * snapshot.bytesTransferred)/snapshot.totalBytes);
                 console.log('currentPercent', currentPercent);
+                
                 this.setState({
                     percentLoaded : currentPercent
                 })
