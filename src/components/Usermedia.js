@@ -3,7 +3,22 @@ import * as firebase from 'firebase';
 import firebaseConfig from '../config/firebaseConfig';
 import Upload from '../components/Upload';
 import Progressbar from './Progressbar';
+import PropTypes from 'prop-types';
 import Style from './Usermedia.css'
+
+const propTypes = {
+    countdown : PropTypes.number,
+    recordTime: PropTypes.number,
+    autostop : PropTypes.bool,
+    autoupload : PropTypes.bool
+};
+
+const defaultProps = {
+    countdown : 3,
+    recordTime : 5,
+    autostop : true,
+    autoupload : false
+};
 
 class UserMedia extends Component{
        
@@ -35,6 +50,13 @@ class UserMedia extends Component{
         this.renderVideoError = this.renderVideoError.bind(this);
         this.countdown = this.countdown.bind(this);
         this.timerStopRecord = this.timerStopRecord.bind(this);
+        this.videoOnPlayer = this.videoOnPlayer.bind(this);
+    }
+
+    videoOnPlayer(videoPlayer, stream){
+
+      
+
     }
 
     setUserMedia(){
@@ -52,53 +74,12 @@ class UserMedia extends Component{
 
         try{
             navigator.mediaDevices.getUserMedia(constraints).then(function(stream) {
-
-                console.log('stream available');
+                
                 this.setState({
                     getUserMediaAvailable : true
                 })
-
-                this.mediaRecorder = new MediaRecorder(stream);
-                this.mediaRecorder.onstop = function(e) {
-                    console.log('onstop')
-                }
-                this.mediaRecorder.ondataavailable = function(e) {
-                    //Upload record
-                    console.log('Uploading');
-                    var auth =  firebase.auth();
-                    var storageRef = firebase.storage().ref();
-                    var uploadTask = storageRef.child('video/video.webm').put(e.data);
-
-                    this.setState({
-                        uploading: true
-                    })
-
-                    //UPLOAD
-                    uploadTask.on('state_changed', function (snapshot) {
-                        
-                        let currentPercent = Math.round((100 * snapshot.bytesTransferred)/snapshot.totalBytes);
-
-                        this.setState({
-                            percentUpload : currentPercent
-                        });
-
-                    }.bind(this), function (error) {
-                        this.setState({
-                            uploading: false
-                        });
-                    }.bind(this), function () {
-                        this.setState({
-                            uploading: false
-                        });
-                        var downloadURL = uploadTask.snapshot.downloadURL;
-                        console.log(downloadURL);
-                    }.bind(this));// uploadTask.on
-                }.bind(this);//this.mediaRecorder.ondataavailable
-
-                console.log('this.mediaRecorder', typeof(this.mediaRecorder));
-
-                const videoPlayer = document.getElementById('videoPlayer');
                 
+                const videoPlayer = document.getElementById('videoPlayer');
                 if ("srcObject" in videoPlayer) {
                     videoPlayer.srcObject = stream;
                 }else {
@@ -111,62 +92,94 @@ class UserMedia extends Component{
                         recDisabled : false
                     })
                     videoPlayer.play();
-                }.bind(this);  
+                }.bind(this);                                  
+               
+
+                this.mediaRecorder = new MediaRecorder(stream);
+                
+                this.mediaRecorder.onstop = function(e) {
+                    console.log('onstop')
+                }
+                
+                this.mediaRecorder.ondataavailable = function(e) {
+                    stream.stop();
+                    const videoData = e.data
+                    //Upload record
+                    if(this.props.autoupload){
+
+                        let auth =  firebase.auth();
+                        let storageRef = firebase.storage().ref();
+                        
+                        this.setState({
+                            uploading: true
+                        })
+                        //UPLOAD
+                        let uploadTask = storageRef.child('video/video.webm').put(videoData);
+                        uploadTask.on('state_changed', function (snapshot) {
+                            let currentPercent = Math.round((100 * snapshot.bytesTransferred)/snapshot.totalBytes);
+                            this.setState({
+                                percentUpload : currentPercent
+                            });
+                        }.bind(this), function (error) {
+                            this.setState({
+                                uploading: false
+                            });
+                        }.bind(this), function () {
+                            this.setState({
+                                uploading: false
+                            });
+                            let downloadURL = uploadTask.snapshot.downloadURL;
+                            console.log(downloadURL);
+                        }.bind(this));// uploadTask.on
+
+                    }else{
+                        
+                        const videoResult = document.getElementById('videoResult');
+
+                        videoResult.src = window.URL.createObjectURL(videoData);
+                        videoResult.controls = true;
+                        videoResult.play();
+                        console.log('videoResult', videoResult);
+
+                        videoResult.onload = function(e) {
+                            //Enable rec button after video player loaded
+                            console.log('e', e);
+                            e.target.play();
+                        }.bind(this); 
+                    }
+                    
+                }.bind(this);//this.mediaRecorder.ondataavailable
 
             }.bind(this)).catch(function(err) {
+                
                 console.log('stream dont available');
                 this.setState({
                     getUserMediaAvailable : false
-                })            
+                });
+
             }.bind(this));//navigator.mediaDevices.getUserMedia            
 
         }catch(e){
+
             console.log(e);
             this.setState({
                 getUserMediaAvailable : false
-            })            
+            });
+
         }
         
     }
 
-     startRecord(){
-        
-        console.log('this.mediaRecorder', this.mediaRecorder);
+    startRecord(){
         if(typeof(this.mediaRecorder) === 'object'){
             this.setState({
                 recording: true
             });
             this.mediaRecorder.start();
         }
-        this.timerStopRecord();
-        
-        console.log('startRecord');
-    }
-
-    timerStopRecord(){
-        console.log('timerStopRecord');
-        const timeRecord = 8;
-        let timer = 0;
-        let currentPercent
-        let intervalStop = window.setInterval(function(){
-            
-            if(timer === timeRecord){
-                this.stopRecord();
-                this.setState({
-                    percentRecord : 100 
-                })                
-                clearInterval(intervalStop);
-            }else{
-                console.log(timer);
-                let currentPercent = Math.round((100 * timer)/timeRecord);
-                this.setState({
-                    percentRecord : currentPercent 
-                })
-                timer++;
-            }
-            
-        }.bind(this), 1000);        
-    }
+        //Starting counter for stop the record
+        (this.props.autostop) ? this.timerStopRecord() : null;
+    }//startRecord()
 
     stopRecord(){
         if(typeof(this.mediaRecorder) === 'object'){
@@ -175,39 +188,62 @@ class UserMedia extends Component{
             });
             this.mediaRecorder.stop();
         }        
-        console.log('stopRecord');
-    }   
+    }//stopRecord()    
+
+    timerStopRecord(){
+        console.log('timerStopRecord()')
+        const timeRecord = parseInt(this.props.recordTime);
+        let timer = 0;
+        let currentPercent
+        let intervalStop = window.setInterval(function(){
+            
+            if(timer === (timeRecord - 1)){
+                this.stopRecord();
+                this.setState({
+                    percentRecord : timeRecord 
+                })                
+                clearInterval(intervalStop);
+            }else{
+                
+                this.setState({
+                    percentRecord : timer 
+                })
+                timer++;
+            }
+            
+        }.bind(this), 1000);        
+    }//timerStopRecord()
 
     countdown(){
-        let timer = 5;
+        let timer = this.props.countdown;
         let intervalID = window.setInterval(function(){
-            
             if((timer) === 0){
                 this.startRecord();
                 clearInterval(intervalID);
             }else{
-                console.log(timer);
                 this.setState({
                     countdown: timer
                 })
                 timer--;
             }
-            
         }.bind(this), 1000);
-    }
+    }//countdown()
 
-    renderVideoSuccess(){
-        //<button className="btn btn-danger btn-block" onClick={ this.stopRecord } disabled = { this.state.recDisabled }>Stop</button>        
+    renderVideoSuccess(){    
         return (<div>
             <div className="usermedia">
                 <video id="videoPlayer" width="320" height="240"></video>
-                <div className="overlay"></div>
+                <video id="videoResult" width="320" height="240"></video>
             </div>
-            <Progressbar working= { this.state.recording } percent = { this.state.percentRecord } />
+ 
+            <p>{ this.state.percentRecord }</p>
             <Progressbar working= { this.state.uploading } percent = { this.state.percentUpload } />
+            
+            { (this.state.recording && !this.props.autostop) ? <button className="btn btn-danger btn-block" onClick={ this.stopRecord } disabled = { this.state.recDisabled }>Stop</button> : null }
             { (!this.state.percentRecord && !this.state.percentUpload) ? <button className="btn btn-danger btn-block" onClick={ this.countdown } disabled = { this.state.recDisabled }>Rec { this.state.countdown }</button> : null }
         </div>)
-    } 
+    }//renderVideoSuccess()
+
     renderVideoError(){
         return (<div className="alert alert-danger" role="alert">Get user media is don't available</div>)
     }     
@@ -217,5 +253,8 @@ class UserMedia extends Component{
     }
 
 }
+
+UserMedia.propTypes = propTypes;
+UserMedia.defaultProps = defaultProps;
 
 export default UserMedia;
