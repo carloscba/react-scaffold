@@ -9,6 +9,7 @@
 # production
 /build
 /firebase-deploy
+/jest_0
 
 # misc
 .DS_Store
