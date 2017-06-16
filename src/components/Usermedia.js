@@ -34,11 +34,10 @@ class UserMedia extends Component{
         }
 
         this.state = {
+            status : 'WAITING', //WAITING | STEAMING | RECORDING | PLAYING | UPLOADING | UPLOADED
             getUserMediaAvailable : false, 
             recDisabled : true,
-            recording : false,
             percentRecord: 0,
-            uploading:false,
             percentUpload : 0,
             countdown: ''
         }
@@ -50,19 +49,12 @@ class UserMedia extends Component{
         this.renderVideoError = this.renderVideoError.bind(this);
         this.countdown = this.countdown.bind(this);
         this.timerStopRecord = this.timerStopRecord.bind(this);
-        this.videoOnPlayer = this.videoOnPlayer.bind(this);
-    }
-
-    videoOnPlayer(videoPlayer, stream){
-
-      
-
+        
     }
 
     setUserMedia(){
         //list of constrains supported by browser
         var supportedConstraints = navigator.mediaDevices.getSupportedConstraints();
-        console.log('supportedConstraints', supportedConstraints);
 
         const constraints = { 
             audio: false, 
@@ -76,7 +68,8 @@ class UserMedia extends Component{
             navigator.mediaDevices.getUserMedia(constraints).then(function(stream) {
                 
                 this.setState({
-                    getUserMediaAvailable : true
+                    getUserMediaAvailable : true,
+                    status : 'STREAMING'
                 })
                 
                 const videoPlayer = document.getElementById('videoPlayer');
@@ -111,7 +104,7 @@ class UserMedia extends Component{
                         let storageRef = firebase.storage().ref();
                         
                         this.setState({
-                            uploading: true
+                            status: 'UPLOADING'
                         })
                         //UPLOAD
                         let uploadTask = storageRef.child('video/video.webm').put(videoData);
@@ -122,18 +115,20 @@ class UserMedia extends Component{
                             });
                         }.bind(this), function (error) {
                             this.setState({
-                                uploading: false
+                                status: 'WAITING'
                             });
                         }.bind(this), function () {
                             this.setState({
-                                uploading: false
+                                status: 'UPLOADED'
                             });
                             let downloadURL = uploadTask.snapshot.downloadURL;
                             console.log(downloadURL);
                         }.bind(this));// uploadTask.on
 
                     }else{
-                        
+                        this.setState({
+                            status: 'PLAYING'
+                        })                        
                         const videoResult = document.getElementById('videoResult');
 
                         videoResult.src = window.URL.createObjectURL(videoData);
@@ -152,6 +147,7 @@ class UserMedia extends Component{
 
             }.bind(this)).catch(function(err) {
                 
+                console.log('err', err);
                 console.log('stream dont available');
                 this.setState({
                     getUserMediaAvailable : false
@@ -173,7 +169,7 @@ class UserMedia extends Component{
     startRecord(){
         if(typeof(this.mediaRecorder) === 'object'){
             this.setState({
-                recording: true
+                status: 'RECORDING'
             });
             this.mediaRecorder.start();
         }
@@ -184,7 +180,7 @@ class UserMedia extends Component{
     stopRecord(){
         if(typeof(this.mediaRecorder) === 'object'){
             this.setState({
-                recording: false
+                status: 'WAITING'
             });
             this.mediaRecorder.stop();
         }        
@@ -232,15 +228,16 @@ class UserMedia extends Component{
     renderVideoSuccess(){    
         return (<div>
             <div className="usermedia">
-                <video id="videoPlayer" width="320" height="240"></video>
-                <video id="videoResult" width="320" height="240"></video>
+                { (this.state.status === 'STREAMING' || this.state.status === 'RECORDING') ? <video id="videoPlayer" width="320" height="240"></video> : null }
+                { (this.state.status === 'PLAYING') ? <video id="videoResult" width="320" height="240"></video> : null }
             </div>
- 
+            <h2>{ this.state.status }</h2>
             <p>{ this.state.percentRecord }</p>
-            <Progressbar working= { this.state.uploading } percent = { this.state.percentUpload } />
             
-            { (this.state.recording && !this.props.autostop) ? <button className="btn btn-danger btn-block" onClick={ this.stopRecord } disabled = { this.state.recDisabled }>Stop</button> : null }
-            { (!this.state.percentRecord && !this.state.percentUpload) ? <button className="btn btn-danger btn-block" onClick={ this.countdown } disabled = { this.state.recDisabled }>Rec { this.state.countdown }</button> : null }
+            { (this.state.status === 'UPLOADING') ? <Progressbar working= { this.state.uploading } percent = { this.state.percentUpload } /> : null }
+            
+            { ( !this.props.autostop && this.state.status === 'RECORDING') ? <button className="btn btn-danger btn-block" onClick={ this.stopRecord } disabled = { this.state.recDisabled }>Stop</button> : null }
+            { (this.state.status === 'STREAMING') ? <button className="btn btn-danger btn-block" onClick={ this.countdown } disabled = { this.state.recDisabled }>Rec { this.state.countdown }</button> : null }
         </div>)
     }//renderVideoSuccess()
 
