@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import Usermedia from '../components/Usermedia'
 import Upload from '../components/Upload'
+import Carousel from '../components/Carousel'
 
 class Step1 extends Component{
 
@@ -9,7 +10,7 @@ class Step1 extends Component{
             <div>
                 <h2>Step1</h2>
                 <Upload 
-                    accept="image" 
+                    accept="video" 
                     index="0"
                 >Upload</Upload>
                 
@@ -20,6 +21,8 @@ class Step1 extends Component{
                     recordTime = "5"
                     autostop
                 />
+                <hr />
+                <Carousel />
             </div>
         )
     }
