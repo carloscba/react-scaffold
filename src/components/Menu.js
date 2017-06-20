@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import style from './Menu.css'
-import m8logo from '../images/m8.jpg';
+import m8logo from '../themes/default/logo.png';
+import style from '../themes/default/Menu.css'
 
 class Menu extends Component{
 
@@ -23,7 +23,7 @@ class Menu extends Component{
                 <div className="container-fluid">
                     <div className="navbar-header">
                         <a className="navbar-brand" href="./">
-                            <img alt="Brand" src = { m8logo } width="40" />
+                            <img alt="Brand" src = { m8logo } width="60" />
                         </a>
                     </div>
                 </div>

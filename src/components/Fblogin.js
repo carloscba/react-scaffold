@@ -1,18 +1,22 @@
 import React, { Component } from 'react';
 import * as firebase from 'firebase'
 import firebaseConfig from '../config/firebaseConfig'
-import style from './Fblogin.css'
 import m8logo from '../images/m8.jpg';
 import PropTypes from 'prop-types';
+import style from '../themes/default/Fblogin.css'
 
 firebase.initializeApp(firebaseConfig)
 
 const propTypes = {
   postLogin: PropTypes.string,
+  profileImage : PropTypes.bool,
+  autoPostLogin : PropTypes.bool
 };
 
 const defaultProps = {
-
+    postLogin: '',
+    profileImage : false,
+    autoPostLogin : false
 };
 
 class FbLogin extends Component{
@@ -26,6 +30,7 @@ class FbLogin extends Component{
         this.login = this.login.bind(this);
         this.renderLoginButton = this.renderLoginButton.bind(this);
         this.renderStartButton = this.renderStartButton.bind(this);
+        this.goto = this.goto.bind(this);
     }
 
     login(){
@@ -40,8 +45,10 @@ class FbLogin extends Component{
             //{uid: "", displayName: "", photoURL: "", email: "", providerId: "facebook.com" } 
             
             const userData = result.user.providerData[0]
+            
             //Redirect
-            if(this.props.postLogin){
+            console.log(this.props.postLogin , this.props.autoPostLogin)
+            if(this.props.postLogin && this.props.autoPostLogin){
                 document.location = this.props.postLogin;
             }else{
                 this.setState({
@@ -59,14 +66,18 @@ class FbLogin extends Component{
         }.bind(this));
     }
 
+    goto(){
+        document.location = this.props.postLogin;
+    }
+
     renderLoginButton(){
-        return (<div><img src= { m8logo } className="fblogin__photo" />
-                <button className="btn btn-primary btn-block fblogin__button" onClick={ this.login }>Login with Facebook</button></div>)
+        return (<div><button className="fblogin__button" onClick={ this.login }>Login with Facebook</button></div>)
     }
 
     renderStartButton(){
-        return (<div><img src= { this.state.userData.photoURL } className="fblogin__photo" />
-               <button className="btn btn-success btn-block fblogin__button">{ this.state.userData.displayName }</button></div>) 
+        return (<div>
+               {(this.props.profileImage) ? <img src= { this.state.userData.photoURL } className="fblogin__photo" /> : null}
+               <button onClick={ this.goto } className="fblogin__button">{ this.state.userData.displayName }</button></div>) 
     }
 
     render(){

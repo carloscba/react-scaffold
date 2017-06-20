@@ -10,14 +10,14 @@ const propTypes = {
     countdown : PropTypes.number,
     recordTime: PropTypes.number,
     autostop : PropTypes.bool,
-    autoupload : PropTypes.bool
+    autoupload : PropTypes.bool,
 };
 
 const defaultProps = {
     countdown : 3,
     recordTime : 5,
     autostop : true,
-    autoupload : false
+    autoupload : false,
 };
 
 class UserMedia extends Component{
@@ -122,7 +122,7 @@ class UserMedia extends Component{
                                 status: 'UPLOADED'
                             });
                             let downloadURL = uploadTask.snapshot.downloadURL;
-                            console.log(downloadURL);
+                            console.log('downloadURL', downloadURL);
                         }.bind(this));// uploadTask.on
 
                     }else{
@@ -225,19 +225,20 @@ class UserMedia extends Component{
         }.bind(this), 1000);
     }//countdown()
 
+
     renderVideoSuccess(){    
         return (<div>
+            
             <div className="usermedia">
                 { (this.state.status === 'STREAMING' || this.state.status === 'RECORDING') ? <video id="videoPlayer" width="320" height="240"></video> : null }
                 { (this.state.status === 'PLAYING') ? <video id="videoResult" width="320" height="240"></video> : null }
             </div>
-            <h2>{ this.state.status }</h2>
-            <p>{ this.state.percentRecord }</p>
-            
-            { (this.state.status === 'UPLOADING') ? <Progressbar working= { this.state.uploading } percent = { this.state.percentUpload } /> : null }
-            
+
+            { (this.state.status === 'UPLOADING') ? <Progressbar percent = { this.state.percentUpload } /> : null }
             { ( !this.props.autostop && this.state.status === 'RECORDING') ? <button className="btn btn-danger btn-block" onClick={ this.stopRecord } disabled = { this.state.recDisabled }>Stop</button> : null }
             { (this.state.status === 'STREAMING') ? <button className="btn btn-danger btn-block" onClick={ this.countdown } disabled = { this.state.recDisabled }>Rec { this.state.countdown }</button> : null }
+            <h2>{ this.state.status }</h2>
+            <p>{ this.state.percentRecord }</p>
         </div>)
     }//renderVideoSuccess()
 

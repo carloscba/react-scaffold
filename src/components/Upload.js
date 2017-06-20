@@ -74,7 +74,7 @@ class Upload extends Component{
             if(!this.state.uploading){
                 uploadLayout = <div><input type="file" accept = { this.state.acceptFile } id="input" className="fileInput" /><button id="btnUpload" className="btn btn-primary btn-block">{ this.props.children }</button></div>
             }else{
-                uploadLayout = <div><Progressbar percentLoaded = { this.state.percentLoaded }/></div>
+                uploadLayout = <div><Progressbar working percent = { this.state.percentLoaded }/></div>
             }
 
         }else{

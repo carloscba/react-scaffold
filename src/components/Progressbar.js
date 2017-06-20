@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import style from './Progressbar.css'
+import style from '../themes/default/Progressbar.css'
 
 class Progressbar extends Component{
 
@@ -15,7 +15,7 @@ class Progressbar extends Component{
             display : 'none'
         }        
 
-        return(<div className="progress" style={ (this.props.working) ? show : hide }><div className="progress-bar" role="progressbar" aria-valuenow={ this.props.percent } aria-valuemin="0" aria-valuemax="100" style={ bar }>{ this.props.percent }%</div></div>);
+        return(<div className="progress" style={ (this.props.percent >= 0) ? show : hide }><div className="progress-bar" role="progressbar" aria-valuenow={ this.props.percent } aria-valuemin="0" aria-valuemax="100" style={ bar }>{ this.props.percent }%</div></div>);
     }
 
 }

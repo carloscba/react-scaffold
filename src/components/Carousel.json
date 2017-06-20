@@ -1,13 +1,17 @@
 [{
     "title" : "Title 1",
     "image" : "image",
-    "video" : ""
+    "video" : "./video/video1.mp4"
 },{
     "title" : "Title 2",
     "image" : "image",
-    "video" : ""
+    "video" : "./video/video2.mp4"
 },{
     "title" : "Title 3",
     "image" : "image",
-    "video" : ""
+    "video" : "./video/video1.mp4"
+},{
+    "title" : "Title 4",
+    "image" : "image",
+    "video" : "./video/video2.mp4"
 }]

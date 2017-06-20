@@ -9,15 +9,25 @@ class Carousel extends Component{
         super();
         this.data = data;
         this.renderItem = this.renderItem.bind(this);
+        this.onSelect = this.onSelect.bind(this);
+    }
+
+    onSelect(event){
+        this.props.onSelect(event.target.currentSrc)
     }
 
     renderItem(){
         let itemLayout = [];
         this.data.map(function(item, index){
-            itemLayout.push(<div class="item" key={ index }><h4>{ item.title }</h4></div>)
-        });
+            itemLayout.push(<div class="item" key={ index }>
+                <a href="#" onClick={ this.onSelect } >
+                    <video width="320" height="120" controls>
+                        <source src={ item.video } type="video/mp4"></source>
+                    </video>
+                </a>
+            </div>)
+        }.bind(this));
         return itemLayout;    
-    
     }
 
     render(){
