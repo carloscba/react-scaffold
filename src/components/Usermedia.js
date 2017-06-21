@@ -11,6 +11,9 @@ const propTypes = {
     recordTime: PropTypes.number,
     autostop : PropTypes.bool,
     autoupload : PropTypes.bool,
+    
+    getusermediaUnavailable : PropTypes.func,
+    onupload : PropTypes.func
 };
 
 const defaultProps = {
@@ -18,6 +21,9 @@ const defaultProps = {
     recordTime : 5,
     autostop : true,
     autoupload : false,
+
+    getusermediaUnavailable : null,
+    onupload : null
 };
 
 class UserMedia extends Component{
@@ -49,6 +55,7 @@ class UserMedia extends Component{
         this.renderVideoError = this.renderVideoError.bind(this);
         this.countdown = this.countdown.bind(this);
         this.timerStopRecord = this.timerStopRecord.bind(this);
+        this.onUpload = this.onUpload.bind(this);
         
     }
 
@@ -123,6 +130,9 @@ class UserMedia extends Component{
                             });
                             let downloadURL = uploadTask.snapshot.downloadURL;
                             console.log('downloadURL', downloadURL);
+                            
+                            (this.props.onupload) ? this.onUpload(downloadURL) : null;
+                            
                         }.bind(this));// uploadTask.on
 
                     }else{
@@ -147,8 +157,10 @@ class UserMedia extends Component{
 
             }.bind(this)).catch(function(err) {
                 
-                console.log('err', err);
-                console.log('stream dont available');
+                if(this.props.getusermediaUnavailable){
+                    this.props.getusermediaUnavailable();
+                }
+
                 this.setState({
                     getUserMediaAvailable : false
                 });
@@ -243,8 +255,17 @@ class UserMedia extends Component{
     }//renderVideoSuccess()
 
     renderVideoError(){
-        return (<div className="alert alert-danger" role="alert">Get user media is don't available</div>)
+        return (<div className="alert alert-danger" role="alert">Get user media is don't available 
+                    <Upload 
+                    accept="video" 
+                    onupload = { this.onUpload }
+                    >Upload</Upload>
+                </div>)
     }     
+
+    onUpload(path){
+        this.props.onupload(path);
+    }
 
     render(){
         return(<div>{ (this.state.getUserMediaAvailable)  ? this.renderVideoSuccess() : this.renderVideoError() }</div>);

@@ -20,7 +20,7 @@ class Carousel extends Component{
         let itemLayout = [];
         this.data.map(function(item, index){
             itemLayout.push(<div class="item" key={ index }>
-                <a href="#" onClick={ this.onSelect } >
+                <a onClick={ this.onSelect } >
                     <video width="320" height="120" controls>
                         <source src={ item.video } type="video/mp4"></source>
                     </video>
@@ -37,7 +37,7 @@ class Carousel extends Component{
                 className="owl-theme"
                 loop 
                 margin={10} 
-                nav
+                items ={1}
             >{ this.renderItem() }</OwlCarousel>           
         </div>
     }

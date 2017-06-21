@@ -2,7 +2,16 @@ import React, { Component } from 'react';
 import * as firebase from 'firebase';
 import firebaseConfig from '../config/firebaseConfig';
 import Progressbar from './Progressbar';
+import PropTypes from 'prop-types';
 import style from './Upload.css';
+
+const propTypes = {
+    onupload : PropTypes.func
+};
+
+const defaultProps = {
+    onupload : null
+};
 
 class Upload extends Component{
 
@@ -18,6 +27,7 @@ class Upload extends Component{
         
         this.handleFiles = this.handleFiles.bind(this);
         this.renderUploadInput = this.renderUploadInput.bind(this);
+        this.onUpload = this.onUpload.bind(this);
     }
 
     handleFiles(newFile){
@@ -40,7 +50,6 @@ class Upload extends Component{
             uploadTask.on('state_changed', function (snapshot) {
                 
                 let currentPercent = Math.round((100 * snapshot.bytesTransferred)/snapshot.totalBytes);
-                console.log('currentPercent', currentPercent);
                 
                 this.setState({
                     percentLoaded : currentPercent
@@ -48,14 +57,13 @@ class Upload extends Component{
 
             }.bind(this), function (error) {
                 
-                console.error(error);
                 this.setState({
                     uploading : false,
                 });           
 
             }.bind(this), function () {
                 var downloadURL = uploadTask.snapshot.downloadURL;
-                console.log(downloadURL);
+                this.onUpload(downloadURL)
 
                 this.setState({
                     uploading : false,
@@ -116,6 +124,10 @@ class Upload extends Component{
 
     }
 
+    onUpload(path){
+        this.props.onupload(path);
+    }
+
     render(){
         return(<div>{ this.renderUploadInput() }</div>);
     }
@@ -133,4 +145,8 @@ class Upload extends Component{
         }, false);
     }
 }
+
+Upload.propTypes = propTypes;
+Upload.defaultProps = defaultProps;
+
 export default Upload;
