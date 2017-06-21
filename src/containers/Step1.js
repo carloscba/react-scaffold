@@ -10,23 +10,30 @@ class Step1 extends Component{
         super();
         this.state = {
             overlayVideo : '',
-            videoPath : false
+            videoPath : false,
+            videoSelected : 0
         }
+        
         this.onSelect = this.onSelect.bind(this);
-        this.renderVideo = this.renderVideo.bind(this);
-        this.renderUpload = this.renderUpload.bind(this);
-        this.getusermediaUnavailable = this.getusermediaUnavailable.bind(this);
         this.onUpload = this.onUpload.bind(this);
+        this.renderUpload = this.renderUpload.bind(this);
+        this.renderVideo = this.renderVideo.bind(this);
+        this.getusermediaUnavailable = this.getusermediaUnavailable.bind(this);
+        this.playVideos = this.playVideos.bind(this);
+        this.sendVideos = this.sendVideos.bind(this);        
     }
 
-    onSelect(src){
-        const fullPath = src.split('/');
-        const videoPath = `./video/${fullPath[fullPath.length-1]}` 
-        console.log('videoPath', videoPath);
-        let videoSelected = document.getElementById('videoSelected');
-        videoSelected.src = videoPath;
-        
+    onSelect(current){
+        this.setState({
+            videoSelected : current
+        })
     }
+
+    onUpload(path){
+        this.setState({
+            videoPath : path
+        })
+    }    
 
     renderUpload(){
         let layout = ''
@@ -42,11 +49,6 @@ class Step1 extends Component{
                     { layout }
                     { this.renderOverlay() }
                 </div>
-    }
-
-    getusermediaUnavailable(){
-        let divOverlay = document.getElementById('divOverlay');
-        //divOverlay.style.display = 'none';
     }
 
     renderVideo(){
@@ -69,54 +71,55 @@ class Step1 extends Component{
                 </div>
     }
 
+    getusermediaUnavailable(){
+        let divOverlay = document.getElementById('divOverlay');
+        //divOverlay.style.display = 'none';
+    }    
+
     renderOverlay(){
         return <div>
                     {(this.state.videoPath) ? <video width="320" height="240" id="videoUploaded" className="videoUploaded"><source src={ this.state.videoPath } type="video/mp4" /></video> : null }
                     <div className="overlay" id="divOverlay">
-                        <video id="videoSelected" className="videoSelected" width="320" height="120">
-                            <source src="./video/video1.mp4" type="video/mp4" />
-                            Your browser doesn't support HTML5 video tag.
-                        </video>
+                        <Carousel 
+                        onSelect = { this.onSelect }
+                        startPosition = { this.state.videoSelected }
+                        />    
                     </div>
                 </div>
     }
 
-    onUpload(path){
-        this.setState({
-            videoPath : path
-        })
-    }
-
     playVideos(){
         const videoUploaded = document.getElementById('videoUploaded');
-        const videoSelected = document.getElementById('videoSelected');
+        const videoSelected = document.getElementById('video_'+this.state.videoSelected);
 
         videoUploaded.play();
         videoSelected.play();
     }
 
+    sendVideos(){
+        console.log(this.state);
+    }
+
     render(){
         
         let buttonLayout = <div className="row">
-                                <div className="col-xs-12">
-                                    <div className="btn-group btn-group-justified" role="group">
-                                        <div className="btn-group" role="group">
-                                            <button type="button" className="btn btn-primary" onClick={ this.playVideos }>Play</button>
-                                        </div>
-                                        <div className="btn-group" role="group">
-                                            <button type="button" className="btn btn-primary">Send</button>
-                                        </div>                                        
-                                    </div>                        
-                                </div>
-                            </div>
+            <div className="col-xs-12">
+                <div className="btn-group btn-group-justified" role="group">
+                    <div className="btn-group" role="group">
+                        <button type="button" className="btn btn-primary" onClick={ this.playVideos }>Play</button>
+                    </div>
+                    <div className="btn-group" role="group">
+                        <button type="button" className="btn btn-primary" onClick={ this.sendVideos } >Share</button>
+                    </div>                                        
+                </div>                        
+            </div>
+        </div>
 
         let carouselLayout = <div className="row">
-                                <div className="col-xs-12">
-                                    <Carousel 
-                                    onSelect = { this.onSelect }
-                                    />                
-                                </div>
-                            </div>
+            <div className="col-xs-12">
+                <Carousel />                
+            </div>
+        </div>
 
         return(
             <div>
@@ -126,7 +129,6 @@ class Step1 extends Component{
                     </div>
                 </div>
                 { (this.state.videoPath) ? buttonLayout : null }
-                { (!this.state.videoPath) ? carouselLayout : null }
             </div>
         )
     }

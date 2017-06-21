@@ -102,7 +102,7 @@ class UserMedia extends Component{
                 }
                 
                 this.mediaRecorder.ondataavailable = function(e) {
-                    stream.stop();
+                    
                     const videoData = e.data
                     //Upload record
                     if(this.props.autoupload){
@@ -242,14 +242,13 @@ class UserMedia extends Component{
         return (<div>
             
             <div className="usermedia">
-                { (this.state.status === 'STREAMING' || this.state.status === 'RECORDING') ? <video id="videoPlayer" width="320" height="240"></video> : null }
-                { (this.state.status === 'PLAYING') ? <video id="videoResult" width="320" height="240"></video> : null }
+                { (this.state.status === 'STREAMING' || this.state.status === 'RECORDING') ? <video id="videoPlayer" className="videoPlayer" width="320" height="240"></video> : null }
+                { (this.state.status === 'PLAYING') ? <video id="videoResult" width="320" height="240" loop></video> : null }
             </div>
 
             { (this.state.status === 'UPLOADING') ? <Progressbar percent = { this.state.percentUpload } /> : null }
             { ( !this.props.autostop && this.state.status === 'RECORDING') ? <button className="btn btn-danger btn-block" onClick={ this.stopRecord } disabled = { this.state.recDisabled }>Stop</button> : null }
             { (this.state.status === 'STREAMING') ? <button className="btn btn-danger btn-block" onClick={ this.countdown } disabled = { this.state.recDisabled }>Rec { this.state.countdown }</button> : null }
-            <h2>{ this.state.status }</h2>
             <p>{ this.state.percentRecord }</p>
         </div>)
     }//renderVideoSuccess()

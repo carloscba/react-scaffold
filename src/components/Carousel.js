@@ -13,19 +13,22 @@ class Carousel extends Component{
     }
 
     onSelect(event){
-        this.props.onSelect(event.target.currentSrc)
+
+        let current = event.item.index;
+        let video = document.getElementById('video_'+current);
+        video.play();
+
+        this.props.onSelect(current);
     }
 
     renderItem(){
         let itemLayout = [];
         this.data.map(function(item, index){
             itemLayout.push(<div class="item" key={ index }>
-                <a onClick={ this.onSelect } >
-                    <video width="320" height="120" controls>
-                        <source src={ item.video } type="video/mp4"></source>
-                    </video>
-                </a>
-            </div>)
+                                <video width="320" height="120" id={ "video_"+index } autoplay loop>
+                                    <source src={ item.video } type="video/mp4"></source>
+                                </video>
+                            </div>)
         }.bind(this));
         return itemLayout;    
     }
@@ -35,9 +38,12 @@ class Carousel extends Component{
         return <div>
             <OwlCarousel 
                 className="owl-theme"
-                loop 
-                margin={10} 
-                items ={1}
+                margin={ 10 } 
+                items ={ 1 }
+                dots = { false }
+                callbacks
+                onDragged = { this.onSelect }
+                startPosition = { this.props.startPosition }
             >{ this.renderItem() }</OwlCarousel>           
         </div>
     }
