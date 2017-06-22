@@ -7,33 +7,40 @@ class Carousel extends Component{
 
     constructor(){
         super();
-        this.data = data;
-        this.renderItem = this.renderItem.bind(this);
-        this.onSelect = this.onSelect.bind(this);
+
+        this.state = {
+            current : 0,
+            data : data
+        }
+        
+        this.onDragged = this.onDragged.bind(this);
+        this.previewVideo = this.previewVideo.bind(this);
     }
 
-    onSelect(event){
-
+    onDragged(event){
         let current = event.item.index;
-        let video = document.getElementById('video_'+current);
-        video.play();
-
-        this.props.onSelect(current);
+        this.setState({
+            current : current
+        })
+        this.props.onDragged(current);
     }
 
-    renderItem(){
+    previewVideo(current){
+        current = (typeof(current) === 'number') ? current : this.state.current;
+        let video = document.getElementById('video_'+current);
+        video.play();        
+    }
+
+    render(){
+
         let itemLayout = [];
-        this.data.map(function(item, index){
-            itemLayout.push(<div class="item" key={ index }>
-                                <video width="320" height="120" id={ "video_"+index } autoplay loop>
+        this.state.data.map(function(item, index){
+            itemLayout.push(<div className="item" key={ index }>
+                                <video onClick={ this.previewVideo } width="320" height="120" id={ "video_"+index } >
                                     <source src={ item.video } type="video/mp4"></source>
                                 </video>
                             </div>)
         }.bind(this));
-        return itemLayout;    
-    }
-
-    render(){
 
         return <div>
             <OwlCarousel 
@@ -42,9 +49,9 @@ class Carousel extends Component{
                 items ={ 1 }
                 dots = { false }
                 callbacks
-                onDragged = { this.onSelect }
+                onDragged = { this.onDragged }
                 startPosition = { this.props.startPosition }
-            >{ this.renderItem() }</OwlCarousel>           
+            >{ itemLayout }</OwlCarousel>           
         </div>
     }
 

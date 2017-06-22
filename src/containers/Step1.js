@@ -3,6 +3,7 @@ import Usermedia from '../components/Usermedia';
 import Upload from '../components/Upload';
 import Carousel from '../components/Carousel';
 import Style from './Step1.css';
+import { Link } from 'react-router-dom';
 
 class Step1 extends Component{
 
@@ -14,16 +15,17 @@ class Step1 extends Component{
             videoSelected : 0
         }
         
-        this.onSelect = this.onSelect.bind(this);
+        this.onDragged = this.onDragged.bind(this);
         this.onUpload = this.onUpload.bind(this);
         this.renderUpload = this.renderUpload.bind(this);
+        this.startRecord = this.startRecord.bind(this);
+        this.stopRecord = this.stopRecord.bind(this);
         this.renderVideo = this.renderVideo.bind(this);
-        this.getusermediaUnavailable = this.getusermediaUnavailable.bind(this);
         this.playVideos = this.playVideos.bind(this);
         this.sendVideos = this.sendVideos.bind(this);        
     }
 
-    onSelect(current){
+    onDragged(current){
         this.setState({
             videoSelected : current
         })
@@ -51,17 +53,25 @@ class Step1 extends Component{
                 </div>
     }
 
+    startRecord(){
+        let video = document.getElementById('video_'+this.state.videoSelected);
+        video.play();
+    }
+    stopRecord(){
+        console.log('stopRecord');
+    }    
+
     renderVideo(){
         let layout = '';
 
         if(!this.state.videoPath){
             layout = <Usermedia 
-                countdown = "3"
-                recordTime = "5"
-                autostop
-                autoupload
-                getusermediaUnavailable = { this.getusermediaUnavailable }
-                onupload = { this.onUpload }
+                countdown = { 3 }
+                recordTime = { 5 }
+                autoStop
+                autoUpload
+                onUpload = { this.onUpload }
+                startRecord = { this.startRecord }
             /> 
         }
                     
@@ -71,17 +81,12 @@ class Step1 extends Component{
                 </div>
     }
 
-    getusermediaUnavailable(){
-        let divOverlay = document.getElementById('divOverlay');
-        //divOverlay.style.display = 'none';
-    }    
-
     renderOverlay(){
         return <div>
                     {(this.state.videoPath) ? <video width="320" height="240" id="videoUploaded" className="videoUploaded"><source src={ this.state.videoPath } type="video/mp4" /></video> : null }
                     <div className="overlay" id="divOverlay">
                         <Carousel 
-                        onSelect = { this.onSelect }
+                        onDragged = { this.onDragged }
                         startPosition = { this.state.videoSelected }
                         />    
                     </div>
@@ -97,6 +102,8 @@ class Step1 extends Component{
     }
 
     sendVideos(){
+        let videoPath = encodeURI('http://35.185.121.141/videos_results/stack_1498161122.mp4');
+        document.location = `/share?v=${ videoPath }`;
         console.log(this.state);
     }
 
@@ -112,12 +119,6 @@ class Step1 extends Component{
                         <button type="button" className="btn btn-primary" onClick={ this.sendVideos } >Share</button>
                     </div>                                        
                 </div>                        
-            </div>
-        </div>
-
-        let carouselLayout = <div className="row">
-            <div className="col-xs-12">
-                <Carousel />                
             </div>
         </div>
 

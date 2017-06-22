@@ -1,0 +1,10 @@
+.videoThumb:after {
+    content: "";
+    position: absolute;
+    top: 0;
+    width: 320px;
+    height: 250px;
+    z-index: 100;
+    background: transparent url('play.png') no-repeat center;
+    pointer-events: none;
+}

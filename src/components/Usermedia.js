@@ -6,33 +6,11 @@ import Progressbar from './Progressbar';
 import PropTypes from 'prop-types';
 import Style from './Usermedia.css'
 
-const propTypes = {
-    countdown : PropTypes.number,
-    recordTime: PropTypes.number,
-    autostop : PropTypes.bool,
-    autoupload : PropTypes.bool,
-    
-    getusermediaUnavailable : PropTypes.func,
-    onupload : PropTypes.func
-};
-
-const defaultProps = {
-    countdown : 3,
-    recordTime : 5,
-    autostop : true,
-    autoupload : false,
-
-    getusermediaUnavailable : null,
-    onupload : null
-};
-
 class UserMedia extends Component{
        
     constructor(){
         super();
         this.mediaRecorder;
-
-        console.log('navigator.mediaDevices', navigator.mediaDevices);
         if (navigator.mediaDevices !== undefined) {
             this.setUserMedia()
         }else{
@@ -40,7 +18,7 @@ class UserMedia extends Component{
         }
 
         this.state = {
-            status : 'WAITING', //WAITING | STEAMING | RECORDING | PLAYING | UPLOADING | UPLOADED
+            status : 'WAITING', //WAITING | STREAMING | RECORDING | PLAYING | UPLOADING | UPLOADED
             getUserMediaAvailable : false, 
             recDisabled : true,
             percentRecord: 0,
@@ -105,7 +83,7 @@ class UserMedia extends Component{
                     
                     const videoData = e.data
                     //Upload record
-                    if(this.props.autoupload){
+                    if(this.props.autoUpload){
 
                         let auth =  firebase.auth();
                         let storageRef = firebase.storage().ref();
@@ -131,7 +109,7 @@ class UserMedia extends Component{
                             let downloadURL = uploadTask.snapshot.downloadURL;
                             console.log('downloadURL', downloadURL);
                             
-                            (this.props.onupload) ? this.onUpload(downloadURL) : null;
+                            (this.props.onUpload) ? this.onUpload(downloadURL) : null;
                             
                         }.bind(this));// uploadTask.on
 
@@ -152,30 +130,22 @@ class UserMedia extends Component{
                             e.target.play();
                         }.bind(this); 
                     }
-                    
                 }.bind(this);//this.mediaRecorder.ondataavailable
 
             }.bind(this)).catch(function(err) {
                 
-                if(this.props.getusermediaUnavailable){
-                    this.props.getusermediaUnavailable();
-                }
+                (this.props.getUserMediaUnavailable) ? this.props.getUserMediaUnavailable() : null;
 
                 this.setState({
                     getUserMediaAvailable : false
                 });
-
             }.bind(this));//navigator.mediaDevices.getUserMedia            
 
         }catch(e){
-
-            console.log(e);
             this.setState({
                 getUserMediaAvailable : false
             });
-
         }
-        
     }
 
     startRecord(){
@@ -186,7 +156,9 @@ class UserMedia extends Component{
             this.mediaRecorder.start();
         }
         //Starting counter for stop the record
-        (this.props.autostop) ? this.timerStopRecord() : null;
+        (this.props.autoStop) ? this.timerStopRecord() : null;
+        //call when started record 
+        (this.props.startRecord) ? this.props.startRecord() : null;
     }//startRecord()
 
     stopRecord(){
@@ -195,6 +167,7 @@ class UserMedia extends Component{
                 status: 'WAITING'
             });
             this.mediaRecorder.stop();
+            (this.props.stopRecord) ? this.props.stopRecord() : null;
         }        
     }//stopRecord()    
 
@@ -239,40 +212,64 @@ class UserMedia extends Component{
 
 
     renderVideoSuccess(){    
-        return (<div>
-            
-            <div className="usermedia">
-                { (this.state.status === 'STREAMING' || this.state.status === 'RECORDING') ? <video id="videoPlayer" className="videoPlayer" width="320" height="240"></video> : null }
-                { (this.state.status === 'PLAYING') ? <video id="videoResult" width="320" height="240" loop></video> : null }
-            </div>
+        return (
+            <div>
+                <div className="usermedia">
+                    { (this.state.status === 'STREAMING' || this.state.status === 'RECORDING') ? <video id="videoPlayer" className="videoPlayer" width="320" height="240"></video> : null }
+                    { (this.state.status === 'PLAYING') ? <video id="videoResult" width="320" height="240" loop></video> : null }
+                </div>
 
-            { (this.state.status === 'UPLOADING') ? <Progressbar percent = { this.state.percentUpload } /> : null }
-            { ( !this.props.autostop && this.state.status === 'RECORDING') ? <button className="btn btn-danger btn-block" onClick={ this.stopRecord } disabled = { this.state.recDisabled }>Stop</button> : null }
-            { (this.state.status === 'STREAMING') ? <button className="btn btn-danger btn-block" onClick={ this.countdown } disabled = { this.state.recDisabled }>Rec { this.state.countdown }</button> : null }
-            <p>{ this.state.percentRecord }</p>
-        </div>)
+                { (this.state.status === 'UPLOADING') ? <Progressbar percent = { this.state.percentUpload } /> : null }
+                { ( !this.props.autoStop && this.state.status === 'RECORDING') ? <button className="btn btn-danger btn-block" onClick={ this.stopRecord } disabled = { this.state.recDisabled }>Stop</button> : null }
+                { (this.state.status === 'STREAMING') ? <button className="btn btn-danger btn-block" onClick={ this.countdown } disabled = { this.state.recDisabled }>Rec { this.state.countdown }</button> : null }
+                <p>{ this.state.percentRecord }</p>
+            </div>
+        )
     }//renderVideoSuccess()
 
     renderVideoError(){
-        return (<div className="alert alert-danger" role="alert">Get user media is don't available 
-                    <Upload 
-                    accept="video" 
-                    onupload = { this.onUpload }
-                    >Upload</Upload>
-                </div>)
-    }     
+        return (
+            <div className="alert alert-danger" role="alert">Get user media is don't available 
+                <Upload 
+                accept="video" 
+                onupload = { this.onUpload }
+                >Upload</Upload>
+            </div>
+        )
+    }//renderVideoError()
 
     onUpload(path){
-        this.props.onupload(path);
+        this.props.onUpload(path);
     }
 
     render(){
-        return(<div>{ (this.state.getUserMediaAvailable)  ? this.renderVideoSuccess() : this.renderVideoError() }</div>);
+        return <div>{ (this.state.getUserMediaAvailable)  ? this.renderVideoSuccess() : this.renderVideoError() }</div>;
     }
 
 }
 
-UserMedia.propTypes = propTypes;
-UserMedia.defaultProps = defaultProps;
+UserMedia.propTypes = {
+    countdown : PropTypes.number,
+    recordTime: PropTypes.number,
+    autoStop : PropTypes.bool,
+    autoUpload : PropTypes.bool,
+    
+    getUserMediaUnavailable : PropTypes.func,
+    onUpload : PropTypes.func,
+    startRecord : PropTypes.func,
+    stopRecord : PropTypes.func
+};
+
+UserMedia.defaultProps = {
+    countdown : 3,
+    recordTime : 5,
+    autoStop : true,
+    autoUpload : false,
+
+    getUserMediaUnavailable : null,
+    onUpload : null,
+    startRecord : null,
+    stopRecord : null
+};
 
 export default UserMedia;
