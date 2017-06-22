@@ -103,24 +103,25 @@ class Step1 extends Component{
     }
 
     sendVideos(){
+        
+        axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
 
-        axios.post('http://35.185.121.141/index.php', {
-            action: 'stack',
-            url: this.state.videoPath,
-            videoId : 0
+        axios.get('http://35.185.121.141/index.php', {
+            params: {
+                action: 'stack',
+                url: this.state.videoPath,
+                videoId : 0
+            }
         })
         .then(function (response) {
-            console.log(response);
+            console.log(response.data);
 
-            let videoPath = encodeURI('http://35.185.121.141/videos_results/stack_1498161122.mp4');
-            document.location = `/share?v=${ videoPath }`;
-
+            let videoPath = response.data.url;
+            document.location = `/share?v=${ videoPath }`;            
         })
         .catch(function (error) {
             console.log(error);
         });
-
-
     }
 
     render(){
