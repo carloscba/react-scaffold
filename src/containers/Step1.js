@@ -4,6 +4,7 @@ import Upload from '../components/Upload';
 import Carousel from '../components/Carousel';
 import Style from './Step1.css';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
 
 class Step1 extends Component{
 
@@ -102,9 +103,24 @@ class Step1 extends Component{
     }
 
     sendVideos(){
-        let videoPath = encodeURI('http://35.185.121.141/videos_results/stack_1498161122.mp4');
-        document.location = `/share?v=${ videoPath }`;
-        console.log(this.state);
+
+        axios.post('http://35.185.121.141/index.php', {
+            action: 'stack',
+            url: this.state.videoPath,
+            videoId : 0
+        })
+        .then(function (response) {
+            console.log(response);
+
+            let videoPath = encodeURI('http://35.185.121.141/videos_results/stack_1498161122.mp4');
+            document.location = `/share?v=${ videoPath }`;
+
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+
+
     }
 
     render(){
