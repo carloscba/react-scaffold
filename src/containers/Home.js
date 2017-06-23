@@ -16,7 +16,7 @@ class Home extends Component{
         return(
             <div className='row'>
                 <div className='col-xs-12 col-md-12 col-lg-12 col-xl-12'>
-                    <Fblogin postLogin='step1' />
+                    <Fblogin postLogin='/step1' />
                 </div>
             </div>
         )

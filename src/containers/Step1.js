@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
+import { BrowserRouter as Router, Route, Redirect, Link } from 'react-router-dom';
 import Usermedia from '../components/Usermedia';
 import Upload from '../components/Upload';
 import Carousel from '../components/Carousel';
 import Style from './Step1.css';
-import { Link } from 'react-router-dom';
 import axios from 'axios';
 
 class Step1 extends Component{
@@ -13,6 +13,7 @@ class Step1 extends Component{
         this.state = {
             overlayVideo : '',
             videoPath : false,
+            videoResult : false,
             videoSelected : 0
         }
         
@@ -112,20 +113,19 @@ class Step1 extends Component{
                 url: this.state.videoPath,
                 videoId : 0
             }
-        })
-        .then(function (response) {
-            console.log(response.data);
+        }).then(function (response) {
+            
+            //document.location = `share/${ response.data.name }`;
+            this.props.history.push(`share/${ response.data.name }`)
 
-            let videoPath = response.data.url;
-            document.location = `/share?v=${ videoPath }`;            
-        })
-        .catch(function (error) {
+
+        }.bind(this)).catch(function (error) {
             console.log(error);
-        });
+        }.bind(this));
     }
 
     render(){
-        
+
         let buttonLayout = <div className="row">
             <div className="col-xs-12">
                 <div className="btn-group btn-group-justified" role="group">
@@ -138,7 +138,7 @@ class Step1 extends Component{
                 </div>                        
             </div>
         </div>
-
+        
         return(
             <div>
                 <div className="row">

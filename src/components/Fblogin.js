@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { BrowserRouter as Router, Route, Redirect, Link } from 'react-router-dom';
 import * as firebase from 'firebase'
 import firebaseConfig from '../config/firebaseConfig'
 import m8logo from '../images/m8.jpg';
@@ -7,30 +8,18 @@ import style from '../themes/default/Fblogin.css'
 
 firebase.initializeApp(firebaseConfig)
 
-const propTypes = {
-  postLogin: PropTypes.string,
-  profileImage : PropTypes.bool,
-  autoPostLogin : PropTypes.bool
-};
-
-const defaultProps = {
-    postLogin: '',
-    profileImage : false,
-    autoPostLogin : false
-};
-
 class FbLogin extends Component{
 
     constructor(){
         super();
         this.state = {
             accessToken : null,
-            userData : {}
+            userData : {},
+            isAuthenticated : false
         }
         this.login = this.login.bind(this);
         this.renderLoginButton = this.renderLoginButton.bind(this);
         this.renderStartButton = this.renderStartButton.bind(this);
-        this.goto = this.goto.bind(this);
     }
 
     login(){
@@ -45,17 +34,12 @@ class FbLogin extends Component{
             //{uid: "", displayName: "", photoURL: "", email: "", providerId: "facebook.com" } 
             
             const userData = result.user.providerData[0]
-            
-            //Redirect
-            console.log(this.props.postLogin , this.props.autoPostLogin)
-            if(this.props.postLogin && this.props.autoPostLogin){
-                document.location = this.props.postLogin;
-            }else{
-                this.setState({
-                    accessToken : result.credential.accessToken,
-                    userData : userData
-                })
-            }
+
+            this.setState({
+                accessToken : result.credential.accessToken,
+                userData : userData,
+                isAuthenticated : true
+            })
 
         }.bind(this)).catch(function(error) {
             // Handle Errors here.
@@ -66,21 +50,23 @@ class FbLogin extends Component{
         }.bind(this));
     }
 
-    goto(){
-        document.location = this.props.postLogin;
-    }
-
     renderLoginButton(){
         return (<div><button className="fblogin__button" onClick={ this.login }>Login with Facebook</button></div>)
     }
 
     renderStartButton(){
-        return (<div>
+        return (
+            <div>
                {(this.props.profileImage) ? <img src= { this.state.userData.photoURL } className="fblogin__photo" /> : null}
-               <button onClick={ this.goto } className="fblogin__button">{ this.state.userData.displayName }</button></div>) 
+               <Link to={ this.props.postLogin } className="fblogin__button">{ this.state.userData.displayName }</Link>
+            </div>) 
     }
 
     render(){
+        if(this.props.postLogin && this.props.autoPostLogin){
+            <Redirect to={ this.props.postLogin }/>
+        }
+
         return(
             <div className="fblogin">
                 { (this.state.accessToken === null) ? this.renderLoginButton() : this.renderStartButton() }
@@ -89,7 +75,16 @@ class FbLogin extends Component{
     }
 }
 
-FbLogin.propTypes = propTypes;
-FbLogin.defaultProps = defaultProps;
+FbLogin.propTypes = {
+  postLogin: PropTypes.string,
+  profileImage : PropTypes.bool,
+  autoPostLogin : PropTypes.bool
+};
+
+FbLogin.defaultProps = {
+    postLogin: '',
+    profileImage : false,
+    autoPostLogin : false
+};
 
 export default FbLogin;

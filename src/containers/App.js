@@ -22,7 +22,7 @@ class App extends Component{
                     <div className='container-fluid'>
                         <Route exact path='/' component={ Home }/>
                         <Route path='/step1' component={ Step1 } />
-                        <Route path='/share' component={ Share } />
+                        <Route path='/share/:video' component={ Share } />
                     </div>
                 </div>
             </Router>

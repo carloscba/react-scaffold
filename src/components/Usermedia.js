@@ -92,7 +92,8 @@ class UserMedia extends Component{
                             status: 'UPLOADING'
                         })
                         //UPLOAD
-                        let uploadTask = storageRef.child('video/video.webm').put(videoData);
+                        const uploadTask = storageRef.child(`video/${ Date.now() }.webm`).put(videoData);
+
                         uploadTask.on('state_changed', function (snapshot) {
                             let currentPercent = Math.round((100 * snapshot.bytesTransferred)/snapshot.totalBytes);
                             this.setState({

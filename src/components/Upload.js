@@ -45,7 +45,7 @@ class Upload extends Component{
             this.setState({
                 uploading : true
             })
-            var uploadTask = storageRef.child(`video/${ file.name }`).put(file);
+            var uploadTask = storageRef.child(`video/${ Date.now() }.webm`).put(file);
 
             uploadTask.on('state_changed', function (snapshot) {
                 

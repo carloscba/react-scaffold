@@ -1,23 +1,20 @@
 import React, { Component } from 'react';
 import Style from './Share.css';
+import Fbshare from '../components/Fbshare';
+import jquery from 'jquery'
 
 class Share extends Component{
 
-    getParameterByName(name, url) {
-        if (!url) url = window.location.href;
-        name = name.replace(/[\[\]]/g, "\\$&");
-        var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
-        results = regex.exec(url);
-        if (!results) return null;
-        if (!results[2]) return '';
-        return decodeURIComponent(results[2].replace(/\+/g, " "));
+    constructor(){
+        super();
     }
 
     render(){
         return(
             <div className="row">
                 <div className="col-xs-12">
-                    <video className="videoResult" src={ this.getParameterByName('v') } width="320" height="240" controls></video>
+                    <video className="videoResult" src={ `http://35.185.121.141/videos_results/${ this.props.match.params.video }.mp4` } width="320" height="240" controls></video>
+                    <Fbshare />
                 </div>
             </div>
         )
