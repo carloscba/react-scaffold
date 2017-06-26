@@ -1,4 +1,42 @@
-.videoPlayer{
-    width: 100%;
-    max-width: 320px;
+.usermedia{
+    text-align: center;
 }
+    .usermedia__video-player{
+        width: 100%;
+        max-width: 320px;
+    }
+    
+    .usermedia__rec{
+        display: inline-block;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        margin-top: 20px;
+
+        border: 0px;
+        outline: none;
+        background-color: #FFF;
+
+        transition: all 250ms;
+    }
+    .usermedia__rec:hover{
+        background-color: #ccc;
+        cursor: pointer;
+        transition: all 250ms;
+    }
+
+    .usermedia__timer{
+        display: inline-block;
+        width: 100%;
+    }
+
+    .usermedia__timer-current{
+        color: #FFF;
+    }
+    .usermedia__timer-spacer{
+        color: #FFF;
+        padding: 0 20px;
+    }    
+    .usermedia__timer-total{
+        color: #fa1c43;
+    }

@@ -21,7 +21,7 @@ class UserMedia extends Component{
             status : 'WAITING', //WAITING | STREAMING | RECORDING | PLAYING | UPLOADING | UPLOADED
             getUserMediaAvailable : false, 
             recDisabled : true,
-            percentRecord: 0,
+            timeRecord: '00',
             percentUpload : 0,
             countdown: ''
         }
@@ -173,22 +173,19 @@ class UserMedia extends Component{
     }//stopRecord()    
 
     timerStopRecord(){
-        console.log('timerStopRecord()')
-        const timeRecord = parseInt(this.props.recordTime);
         let timer = 0;
-        let currentPercent
+
         let intervalStop = window.setInterval(function(){
             
-            if(timer === (timeRecord - 1)){
+            if(timer === this.props.recordTime){
                 this.stopRecord();
                 this.setState({
-                    percentRecord : timeRecord 
+                    timeRecord : this.props.recordTime 
                 })                
                 clearInterval(intervalStop);
             }else{
-                
                 this.setState({
-                    percentRecord : timer 
+                    timeRecord : (timer < 10) ? '0'+timer : timer 
                 })
                 timer++;
             }
@@ -211,19 +208,21 @@ class UserMedia extends Component{
         }.bind(this), 1000);
     }//countdown()
 
-
+    /*
+    <button className="btn btn-danger btn-block" onClick={ this.countdown } disabled = { this.state.recDisabled }>Rec { this.state.countdown }</button>    
+    */
     renderVideoSuccess(){    
         return (
-            <div>
-                <div className="usermedia">
-                    { (this.state.status === 'STREAMING' || this.state.status === 'RECORDING') ? <video id="videoPlayer" className="videoPlayer" width="320" height="240"></video> : null }
+            <div className="usermedia">
+                <div>
+                    { (this.state.status === 'STREAMING' || this.state.status === 'RECORDING') ? <video id="videoPlayer" className="usermedia__video-player" width="320" height="240"></video> : null }
                     { (this.state.status === 'PLAYING') ? <video id="videoResult" width="320" height="240" loop></video> : null }
                 </div>
 
                 { (this.state.status === 'UPLOADING') ? <Progressbar percent = { this.state.percentUpload } /> : null }
                 { ( !this.props.autoStop && this.state.status === 'RECORDING') ? <button className="btn btn-danger btn-block" onClick={ this.stopRecord } disabled = { this.state.recDisabled }>Stop</button> : null }
-                { (this.state.status === 'STREAMING') ? <button className="btn btn-danger btn-block" onClick={ this.countdown } disabled = { this.state.recDisabled }>Rec { this.state.countdown }</button> : null }
-                <p>{ this.state.percentRecord }</p>
+                <div className="usermedia__timer"><span className="usermedia__timer-current">00:{ this.state.timeRecord }</span><span className="usermedia__timer-spacer">/</span> <span className="usermedia__timer-total">00:{ this.props.recordTime }</span></div>
+                { (this.state.status === 'STREAMING') ? <a className="usermedia__rec" onClick={ this.countdown } disabled = { this.state.recDisabled }></a>  : null }
             </div>
         )
     }//renderVideoSuccess()
