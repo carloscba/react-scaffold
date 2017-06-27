@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import * as firebase from 'firebase';
+import PropTypes from 'prop-types';
 import firebaseConfig from '../config/firebaseConfig';
 import Upload from '../components/Upload';
 import Progressbar from './Progressbar';
-import PropTypes from 'prop-types';
+
 import Style from './Usermedia.css'
 
 class UserMedia extends Component{
@@ -11,57 +12,84 @@ class UserMedia extends Component{
     constructor(){
         super();
         this.mediaRecorder;
+        this.videoTrack;
+
+        this.state = {
+            status : 'WAITING', //WAITING | STREAMING | RECORDING | PLAYING | UPLOADING | UPLOADED | ERROR
+            recDisabled : true,
+            timeRecord: '00',
+            percentUpload : 0,
+            countdown: '',
+            listOfDevices : []
+        }
+
         if (navigator.mediaDevices !== undefined) {
-            this.setUserMedia()
+            this.listDevices();
         }else{
             navigator.mediaDevices = {};
         }
 
-        this.state = {
-            status : 'WAITING', //WAITING | STREAMING | RECORDING | PLAYING | UPLOADING | UPLOADED
-            getUserMediaAvailable : false, 
-            recDisabled : true,
-            percentRecord: 0,
-            percentUpload : 0,
-            countdown: ''
-        }
-
+        this.listDevices = this.listDevices.bind(this);
         this.setUserMedia = this.setUserMedia.bind(this);
         this.startRecord = this.startRecord.bind(this);
         this.stopRecord = this.stopRecord.bind(this);
-        this.renderVideoSuccess = this.renderVideoSuccess.bind(this);
-        this.renderVideoError = this.renderVideoError.bind(this);
         this.countdown = this.countdown.bind(this);
         this.timerStopRecord = this.timerStopRecord.bind(this);
         this.onUpload = this.onUpload.bind(this);
         
     }
 
-    setUserMedia(){
-        //list of constrains supported by browser
-        var supportedConstraints = navigator.mediaDevices.getSupportedConstraints();
+    listDevices(){
 
+        var supportedConstraints = navigator.mediaDevices.getSupportedConstraints();
+        console.log('supportedConstraints', supportedConstraints);
+        try{
+            navigator.mediaDevices.enumerateDevices().then(function(devices) {
+                let listOfDevices = [];
+                devices.map(function(device){
+                    if(device.kind === 'videoinput'){
+                        listOfDevices.push(device);
+                    }
+                })
+                this.setState({
+                    listOfDevices : listOfDevices
+                })
+                
+                this.setUserMedia(listOfDevices[0].deviceId);
+            }.bind(this));  
+        }catch(e){
+            console.log('Error on listDevices()', e);
+        } 
+    }
+
+    setUserMedia(deviceId){
+        
+        deviceId = (typeof(deviceId) === 'string') ? deviceId : deviceId.target.value;
+        
         const constraints = { 
             audio: false, 
             video: { 
-                width: 320, 
-                height: 240
-            } 
+                width: 320,
+                height: 240,
+                deviceId: deviceId
+            }
         }
 
         try{
-            navigator.mediaDevices.getUserMedia(constraints).then(function(stream) {
+            navigator.mediaDevices.getUserMedia(constraints).then(function(MediaStream) {
+                
+                this.videoTrack = MediaStream.getVideoTracks()[0];
+                this.mediaRecorder = new MediaRecorder(MediaStream);
                 
                 this.setState({
-                    getUserMediaAvailable : true,
-                    status : 'STREAMING'
+                    status : (this.videoTrack.readyState === 'live') ? 'STREAMING' : 'ERROR'
                 })
                 
                 const videoPlayer = document.getElementById('videoPlayer');
                 if ("srcObject" in videoPlayer) {
-                    videoPlayer.srcObject = stream;
+                    videoPlayer.srcObject = MediaStream;
                 }else {
-                    videoPlayer.src = window.URL.createObjectURL(stream);
+                    videoPlayer.src = window.URL.createObjectURL(MediaStream);
                 }            
 
                 videoPlayer.onloadedmetadata = function(e) {
@@ -71,13 +99,24 @@ class UserMedia extends Component{
                     })
                     videoPlayer.play();
                 }.bind(this);                                  
-               
 
-                this.mediaRecorder = new MediaRecorder(stream);
-                
-                this.mediaRecorder.onstop = function(e) {
-                    console.log('onstop')
-                }
+                this.mediaRecorder.onstart = function(event){
+                    this.setState({
+                        status: 'RECORDING'
+                    });
+                    //Starting counter for stop the record
+                    (this.props.autoStop) ? this.timerStopRecord() : null;
+
+                    //Call function on parent when the record is started 
+                    (this.props.startRecord) ? this.props.startRecord() : null;                    
+                }.bind(this);
+
+                this.mediaRecorder.onstop = function(event) {
+                    //Call function on parent when the record is stopped
+                    (this.props.stopRecord) ? this.props.stopRecord() : null;
+                    //Stop the streaming from device
+                    this.videoTrack.stop();
+                }.bind(this);
                 
                 this.mediaRecorder.ondataavailable = function(e) {
                     
@@ -115,9 +154,8 @@ class UserMedia extends Component{
                         }.bind(this));// uploadTask.on
 
                     }else{
-                        this.setState({
-                            status: 'PLAYING'
-                        })                        
+                        this.setState({status: 'PLAYING'});
+
                         const videoResult = document.getElementById('videoResult');
 
                         videoResult.src = window.URL.createObjectURL(videoData);
@@ -135,60 +173,44 @@ class UserMedia extends Component{
 
             }.bind(this)).catch(function(err) {
                 
-                (this.props.getUserMediaUnavailable) ? this.props.getUserMediaUnavailable() : null;
-
                 this.setState({
-                    getUserMediaAvailable : false
+                    status : 'ERROR'
                 });
             }.bind(this));//navigator.mediaDevices.getUserMedia            
 
         }catch(e){
             this.setState({
-                getUserMediaAvailable : false
+                status : 'ERROR'
             });
         }
     }
 
     startRecord(){
         if(typeof(this.mediaRecorder) === 'object'){
-            this.setState({
-                status: 'RECORDING'
-            });
             this.mediaRecorder.start();
-        }
-        //Starting counter for stop the record
-        (this.props.autoStop) ? this.timerStopRecord() : null;
-        //call when started record 
-        (this.props.startRecord) ? this.props.startRecord() : null;
+        }    
     }//startRecord()
 
     stopRecord(){
         if(typeof(this.mediaRecorder) === 'object'){
-            this.setState({
-                status: 'WAITING'
-            });
             this.mediaRecorder.stop();
-            (this.props.stopRecord) ? this.props.stopRecord() : null;
         }        
     }//stopRecord()    
 
     timerStopRecord(){
-        console.log('timerStopRecord()')
-        const timeRecord = parseInt(this.props.recordTime);
         let timer = 0;
-        let currentPercent
+
         let intervalStop = window.setInterval(function(){
             
-            if(timer === (timeRecord - 1)){
+            if(timer === this.props.recordTime){
                 this.stopRecord();
                 this.setState({
-                    percentRecord : timeRecord 
+                    timeRecord : this.props.recordTime 
                 })                
                 clearInterval(intervalStop);
             }else{
-                
                 this.setState({
-                    percentRecord : timer 
+                    timeRecord : (timer < 10) ? '0'+timer : timer 
                 })
                 timer++;
             }
@@ -211,40 +233,41 @@ class UserMedia extends Component{
         }.bind(this), 1000);
     }//countdown()
 
-
-    renderVideoSuccess(){    
-        return (
-            <div>
-                <div className="usermedia">
-                    { (this.state.status === 'STREAMING' || this.state.status === 'RECORDING') ? <video id="videoPlayer" className="videoPlayer" width="320" height="240"></video> : null }
-                    { (this.state.status === 'PLAYING') ? <video id="videoResult" width="320" height="240" loop></video> : null }
-                </div>
-
-                { (this.state.status === 'UPLOADING') ? <Progressbar percent = { this.state.percentUpload } /> : null }
-                { ( !this.props.autoStop && this.state.status === 'RECORDING') ? <button className="btn btn-danger btn-block" onClick={ this.stopRecord } disabled = { this.state.recDisabled }>Stop</button> : null }
-                { (this.state.status === 'STREAMING') ? <button className="btn btn-danger btn-block" onClick={ this.countdown } disabled = { this.state.recDisabled }>Rec { this.state.countdown }</button> : null }
-                <p>{ this.state.percentRecord }</p>
-            </div>
-        )
-    }//renderVideoSuccess()
-
-    renderVideoError(){
-        return (
-            <div className="alert alert-danger" role="alert">Get user media is don't available 
-                <Upload 
-                accept="video" 
-                onupload = { this.onUpload }
-                >Upload</Upload>
-            </div>
-        )
-    }//renderVideoError()
-
     onUpload(path){
+        //Call function on parent when the upload is finished
         this.props.onUpload(path);
     }
 
     render(){
-        return <div>{ (this.state.getUserMediaAvailable)  ? this.renderVideoSuccess() : this.renderVideoError() }</div>;
+
+        let options = [];
+        this.state.listOfDevices.map(function(item, index){
+            options.push(<option value={ item.deviceId }> { item.deviceId }</option>);    
+        })
+
+        if(this.state.status !== 'ERROR'){
+            return (
+                <div className="usermedia">
+                    <div>
+                        { (this.state.status === 'STREAMING' || this.state.status === 'RECORDING') ? <video id="videoPlayer" className="usermedia__video-player"></video> : null }
+                        { (this.state.status === 'PLAYING') ? <video id="videoResult" loop></video> : null }
+                    </div>
+                    { (this.state.status === 'UPLOADING') ? <div className="progressbarContainer"><Progressbar percent = { this.state.percentUpload } /></div> : null }
+                    { ( !this.props.autoStop && this.state.status === 'RECORDING') ? <button className="btn btn-danger btn-block" onClick={ this.stopRecord } disabled = { this.state.recDisabled }>Stop</button> : null }
+                    { (this.state.status !== 'UPLOADING' && this.state.status !== 'PLAYING') ? <div className="usermedia__timer"><span className="usermedia__timer-current">00:{ this.state.timeRecord }</span><span className="usermedia__timer-spacer">/</span> <span className="usermedia__timer-total">00:{ (this.props.recordTime < 10) ? '0'+this.props.recordTime : this.props.recordTime }</span></div> : null }
+                    { (this.state.status === 'STREAMING') ? <a className="usermedia__rec" onClick={ this.countdown } disabled = { this.state.recDisabled }></a>  : null }
+                    { (options.length > 1) ? <select onChange={ this.setUserMedia } >{ options }</select> : null }
+                </div>
+            )
+        }else{
+            return (
+                <Upload 
+                accept="video" 
+                onupload = { this.onUpload }
+                >Upload__</Upload>
+            )            
+        }//if(this.state.getUserMediaAvailable)
+
     }
 
 }
@@ -255,7 +278,6 @@ UserMedia.propTypes = {
     autoStop : PropTypes.bool,
     autoUpload : PropTypes.bool,
     
-    getUserMediaUnavailable : PropTypes.func,
     onUpload : PropTypes.func,
     startRecord : PropTypes.func,
     stopRecord : PropTypes.func
@@ -267,7 +289,6 @@ UserMedia.defaultProps = {
     autoStop : true,
     autoUpload : false,
 
-    getUserMediaUnavailable : null,
     onUpload : null,
     startRecord : null,
     stopRecord : null
