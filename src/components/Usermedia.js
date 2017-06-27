@@ -51,6 +51,8 @@ class UserMedia extends Component{
                         listOfDevices.push(device);
                     }
                 })
+
+                console.log(listOfDevices)
                 this.setState({
                     listOfDevices : listOfDevices
                 })
@@ -64,21 +66,27 @@ class UserMedia extends Component{
 
     setUserMedia(deviceId){
         
-        deviceId = (typeof(deviceId) === 'string') ? deviceId : deviceId.target.value;
+        if(this.videoTrack){
+            this.videoTrack.stop()
+        }
         
+        deviceId = (typeof(deviceId) === 'string') ? deviceId : deviceId.target.value;
+        console.log('deviceId', deviceId);
+
         const constraints = { 
             audio: false, 
-            video: { 
-                width: 320,
-                height: 240,
-                deviceId: deviceId
+            video: {
+                deviceId: deviceId ? {exact: deviceId} : undefined
             }
         }
+
+        console.log('constraints', constraints);
 
         try{
             navigator.mediaDevices.getUserMedia(constraints).then(function(MediaStream) {
                 
                 this.videoTrack = MediaStream.getVideoTracks()[0];
+                console.log('this.videoTrack', this.videoTrack);
                 this.mediaRecorder = new MediaRecorder(MediaStream);
                 
                 this.setState({
@@ -172,13 +180,15 @@ class UserMedia extends Component{
                 }.bind(this);//this.mediaRecorder.ondataavailable
 
             }.bind(this)).catch(function(err) {
-                
+                console.log('error on navigator.mediaDevices.getUserMedia', err)
                 this.setState({
                     status : 'ERROR'
                 });
+
             }.bind(this));//navigator.mediaDevices.getUserMedia            
 
-        }catch(e){
+        }catch(err){
+            console.log('error on try navigator.mediaDevices.getUserMedia', err)
             this.setState({
                 status : 'ERROR'
             });
