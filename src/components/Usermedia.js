@@ -13,6 +13,8 @@ class UserMedia extends Component{
         super();
         this.mediaRecorder;
         this.videoTrack;
+        this.listOfDevices = [];
+        this.currentDevice;
 
         this.state = {
             status : 'WAITING', //WAITING | STREAMING | RECORDING | PLAYING | UPLOADING | UPLOADED | ERROR
@@ -20,7 +22,6 @@ class UserMedia extends Component{
             timeRecord: '00',
             percentUpload : 0,
             countdown: '',
-            listOfDevices : []
         }
 
         if (navigator.mediaDevices !== undefined) {
@@ -31,62 +32,62 @@ class UserMedia extends Component{
 
         this.listDevices = this.listDevices.bind(this);
         this.setUserMedia = this.setUserMedia.bind(this);
+        this.switchCamera = this.switchCamera.bind(this);
         this.startRecord = this.startRecord.bind(this);
         this.stopRecord = this.stopRecord.bind(this);
         this.countdown = this.countdown.bind(this);
         this.timerStopRecord = this.timerStopRecord.bind(this);
         this.onUpload = this.onUpload.bind(this);
-        
     }
 
     listDevices(){
 
         var supportedConstraints = navigator.mediaDevices.getSupportedConstraints();
-        console.log('supportedConstraints', supportedConstraints);
         try{
+            
             navigator.mediaDevices.enumerateDevices().then(function(devices) {
-                let listOfDevices = [];
-                devices.map(function(device){
+                devices.map((device) => {
                     if(device.kind === 'videoinput'){
-                        listOfDevices.push(device);
+                        this.listOfDevices.push(device);
                     }
-                })
-
-                console.log(listOfDevices)
-                this.setState({
-                    listOfDevices : listOfDevices
-                })
-                
-                this.setUserMedia(listOfDevices[0].deviceId);
+                });
+                (this.listOfDevices.length > 0) ? this.setUserMedia(this.listOfDevices[0].deviceId) : alert('Device is don\'t available');
             }.bind(this));  
+
         }catch(e){
-            console.log('Error on listDevices()', e);
+            console.log('Error on navigator.mediaDevices.enumerateDevices', e);
         } 
+    }
+
+    switchCamera(){
+        let availableDevice = this.listOfDevices.filter((device) => {	
+            
+            console.log(device.deviceId, this.currentDevice);
+
+            if(device.deviceId !== this.currentDevice){
+                return device;
+            }
+        });
+        (availableDevice.length > 0) ? this.setUserMedia(availableDevice[0].deviceId) : alert('Device is don\'t available');
     }
 
     setUserMedia(deviceId){
         
-        if(this.videoTrack){
-            this.videoTrack.stop()
-        }
+        (this.videoTrack) ? this.videoTrack.stop() : null;
         
-        deviceId = (typeof(deviceId) === 'string') ? deviceId : deviceId.target.value;
-        console.log('deviceId', deviceId);
+        this.currentDevice = (typeof(deviceId) === 'string') ? deviceId : deviceId.target.value;
 
         const constraints = { 
             audio: false, 
             video: {
-                deviceId: deviceId ? {exact: deviceId} : undefined
+                deviceId: this.currentDevice ? {exact: this.currentDevice} : undefined
             }
         }
-
-        console.log('constraints', constraints);
 
         try{
             navigator.mediaDevices.getUserMedia(constraints).then(function(MediaStream) {
                 
                 this.videoTrack = MediaStream.getVideoTracks()[0];
-                console.log('this.videoTrack', this.videoTrack);
                 this.mediaRecorder = new MediaRecorder(MediaStream);
                 
                 this.setState({
@@ -250,11 +251,6 @@ class UserMedia extends Component{
 
     render(){
 
-        let options = [];
-        this.state.listOfDevices.map(function(item, index){
-            options.push(<option value={ item.deviceId }> { item.deviceId }</option>);    
-        })
-
         if(this.state.status !== 'ERROR'){
             return (
                 <div className="usermedia">
@@ -266,7 +262,7 @@ class UserMedia extends Component{
                     { ( !this.props.autoStop && this.state.status === 'RECORDING') ? <button className="btn btn-danger btn-block" onClick={ this.stopRecord } disabled = { this.state.recDisabled }>Stop</button> : null }
                     { (this.state.status !== 'UPLOADING' && this.state.status !== 'PLAYING') ? <div className="usermedia__timer"><span className="usermedia__timer-current">00:{ this.state.timeRecord }</span><span className="usermedia__timer-spacer">/</span> <span className="usermedia__timer-total">00:{ (this.props.recordTime < 10) ? '0'+this.props.recordTime : this.props.recordTime }</span></div> : null }
                     { (this.state.status === 'STREAMING') ? <a className="usermedia__rec" onClick={ this.countdown } disabled = { this.state.recDisabled }></a>  : null }
-                    { (options.length > 1) ? <select onChange={ this.setUserMedia } >{ options }</select> : null }
+                    { (this.listOfDevices.length > 1) ? <button className="usermedia__switch" onClick={ this.switchCamera }>Switch Camera</button> : null }
                 </div>
             )
         }else{
@@ -274,12 +270,10 @@ class UserMedia extends Component{
                 <Upload 
                 accept="video" 
                 onupload = { this.onUpload }
-                >Upload__</Upload>
+                >Upload</Upload>
             )            
         }//if(this.state.getUserMediaAvailable)
-
     }
-
 }
 
 UserMedia.propTypes = {
