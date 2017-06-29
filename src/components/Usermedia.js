@@ -247,16 +247,16 @@ class UserMedia extends Component{
         if(this.state.status !== 'ERROR'){
             return (
                 <div className="usermedia">
-                    <video id="streamPlayer" className="usermedia__video-player"></video>
-                    <div>
-                        <video id="streamPlayer" className="usermedia__video-player"></video>
-                        { (this.state.status === 'PLAYING') ? <video id="videoResult" loop></video> : null }
+                    <div className="usermedia__player">
+                        <video id="streamPlayer"></video>
                     </div>
-                    { (this.state.status === 'UPLOADING') ? <div className="progressbarContainer"><Progressbar percent = { this.state.percentUpload } /></div> : null }
-                    { ( !this.props.autoStop && this.state.status === 'RECORDING') ? <button className="btn btn-danger btn-block" onClick={ this.stopRecord } disabled = { this.state.recDisabled }>Stop</button> : null }
-                    { (this.state.status !== 'UPLOADING' && this.state.status !== 'PLAYING') ? <div className="usermedia__timer"><span className="usermedia__timer-current">00:{ this.state.timeRecord }</span><span className="usermedia__timer-spacer">/</span> <span className="usermedia__timer-total">00:{ (this.props.recordTime < 10) ? '0'+this.props.recordTime : this.props.recordTime }</span></div> : null }
-                    { (this.state.status === 'STREAMING') ? <a className="usermedia__rec" onClick={ this.startRecord } disabled = { this.state.recDisabled }></a>  : null }
-                    { (this.listOfDevices.length > 1) ? <button className="usermedia__switch" onClick={ this.switchCamera }>Switch Camera</button> : null }
+                    <div className="usermedia__controls">
+                        { (this.state.status === 'UPLOADING') ? <div className="progressbarContainer"><Progressbar percent = { this.state.percentUpload } /></div> : null }
+                        { (!this.props.autoStop && this.state.status === 'RECORDING') ? <button className="btn btn-danger btn-block" onClick={ this.stopRecord } disabled = { this.state.recDisabled }>Stop</button> : null }
+                        { (this.state.status !== 'UPLOADING' && this.state.status !== 'PLAYING') ? <div className="usermedia__timer"><span className="usermedia__timer-current">00:{ this.state.timeRecord }</span><span className="usermedia__timer-spacer">/</span> <span className="usermedia__timer-total">00:{ (this.props.recordTime < 10) ? '0'+this.props.recordTime : this.props.recordTime }</span></div> : null }
+                        { (this.state.status === 'STREAMING') ? <a className="usermedia__rec" onClick={ this.startRecord } disabled = { this.state.recDisabled }></a>  : null }
+                        { (this.listOfDevices.length > 1) ? <button className="usermedia__switch" onClick={ this.switchCamera }>Switch Camera</button> : null }
+                    </div>
                 </div>
             )
         }else{
