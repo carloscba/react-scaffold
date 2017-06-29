@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { BrowserRouter as Link } from 'react-router-dom';
-import m8logo from '../themes/default/logo.png';
-import style from '../themes/default/Menu.css'
+import logo from '../images/m8.jpg';
+import style from './Menu.css'
 
 class Menu extends Component{
 
@@ -24,7 +24,7 @@ class Menu extends Component{
                 <div className="container-fluid">
                     <div className="navbar-header">
                         <a href="./" className="navbar-brand">
-                            <img alt="Brand" src = { m8logo } width="60" />
+                            <img alt="Brand" src = { logo } width="60" />
                         </a>
                     </div>
                 </div>

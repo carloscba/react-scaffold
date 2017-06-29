@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import style from '../themes/default/Menu.css'
+import style from './Menu.css'
 
 class Fbshare extends Component{
 

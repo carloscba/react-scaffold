@@ -81,8 +81,7 @@ class Step1 extends Component{
             let layoutUsermedia = '';
             if(!this.state.videoPath){
                 layoutUsermedia = <Usermedia 
-                    countdown = { 3 }
-                    recordTime = { 10 }
+                    recordTime = { 3 }
                     autoStop
                     autoUpload
                     onUpload = { this.onUpload }
