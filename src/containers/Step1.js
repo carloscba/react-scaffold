@@ -83,7 +83,6 @@ class Step1 extends Component{
                 layoutUsermedia = <Usermedia 
                     recordTime = { 8 }
                     autoStop
-                    autoUpload
                     onUpload = { this.onUpload }
                 /> 
             }            
