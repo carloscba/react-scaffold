@@ -85,13 +85,14 @@ class UserMedia extends Component{
         const constraints = { 
             audio: false, 
             video: {
-                width: 320,
-                height: 240,
+                width: 640,
+                height: 480,
                 deviceId: this.currentDevice ? {exact: this.currentDevice} : undefined
             }
         }
 
         try{
+            
             navigator.mediaDevices.getUserMedia(constraints).then(function(MediaStream) {
                 
                 this.setplayer(MediaStream);
@@ -108,11 +109,11 @@ class UserMedia extends Component{
                     this.setState({
                         status: 'RECORDING'
                     });
-                    (this.props.startRecord) ? this.props.startRecord() : null;//Call function on parent when the record is started                   
+                    (this.props.onStartRecord) ? this.props.onStartRecord() : null;//Call function on parent when the record is started                   
                 }.bind(this);
 
                 this.mediaRecorder.onstop = function(event) {
-                    (this.props.stopRecord) ? this.props.stopRecord() : null; //Call function on parent when the record is stopped
+                    (this.props.onStopRecord) ? this.props.onStopRecord() : null; //Call function on parent when the record is stopped
                     this.videoTrack.stop(); //Stop the streaming from device
                 }.bind(this);
                 
@@ -196,6 +197,11 @@ class UserMedia extends Component{
         this.videoTrack = MediaStream.getVideoTracks()[0];        
         
         this.player.srcObject = MediaStream;
+
+        
+        this.player.onplaying = function(event){
+            (this.props.onPlayPlayer) ? this.props.onPlayPlayer() : null;
+        }.bind(this);
 
         this.player.ontimeupdate = function(event){
             if(this.timeStartRecord != 0){
@@ -299,8 +305,9 @@ UserMedia.propTypes = {
     autoUpload : PropTypes.bool,
     
     onUpload : PropTypes.func,
-    startRecord : PropTypes.func,
-    stopRecord : PropTypes.func
+    onStartRecord : PropTypes.func,
+    onStopRecord : PropTypes.func,
+    onPlayPlayer : PropTypes.func
 };
 
 UserMedia.defaultProps = {
@@ -309,8 +316,9 @@ UserMedia.defaultProps = {
     autoUpload : false,
 
     onUpload : null,
-    startRecord : null,
-    stopRecord : null
+    onStartRecord : null,
+    onStopRecord : null,
+    onPlayPlayer : null
 };
 
 export default UserMedia;
