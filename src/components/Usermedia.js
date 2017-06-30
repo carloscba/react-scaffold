@@ -20,7 +20,8 @@ class UserMedia extends Component{
         this.state = {
             status : 'WAITING', //WAITING | STREAMING | RECORDING | PLAYING | UPLOADING | UPLOADED | ERROR
             recDisabled : true,
-            timeRecord: '00',
+            currentTimeRecord: '00',
+            percentTimeRecord : 0,
             percentUpload : 0,
         }
 
@@ -89,9 +90,9 @@ class UserMedia extends Component{
             navigator.mediaDevices.getUserMedia(constraints).then(function(MediaStream) {
                 
                 this.setStreamPlayer(MediaStream);
-                
-                this.mediaRecorder = new MediaRecorder(MediaStream);
 
+                this.mediaRecorder = new MediaRecorder(MediaStream);
+                
                 this.mediaRecorder.onerror = function(event){
                     console.log('error on this.mediaRecorder.onerror', event);
                 }
@@ -202,9 +203,17 @@ class UserMedia extends Component{
             if(this.timeStartRecord != 0){
                 //Calculate of current time of record
                 //(this.props.autoStop)
-                console.log('Math.round(Date.now() - this.timeStartRecord) >= this.props.recordTime', Math.round(Date.now() - this.timeStartRecord)/1000);
-                (Math.round((Date.now() - this.timeStartRecord) / 1000) >= this.props.recordTime) ? this.stopRecord() : null ;
-                
+                let currentTimeRecord = Math.round((Date.now() - this.timeStartRecord) / 1000); 
+                this.setState({
+                    currentTimeRecord : (currentTimeRecord < 10 ) ? '0'+currentTimeRecord : currentTimeRecord,
+                    percentTimeRecord :  Math.round((currentTimeRecord * 100) / this.props.recordTime)
+                })
+
+                if(currentTimeRecord >= this.props.recordTime){
+                    this.streamPlayer.ontimeupdate = null;
+                    this.stopRecord()
+                };
+
             }
             
         }.bind(this); 
@@ -232,6 +241,7 @@ class UserMedia extends Component{
     }//startRecord()
 
     stopRecord(){
+        
         if(typeof(this.mediaRecorder) === 'object'){
             this.mediaRecorder.stop();
         }        
@@ -244,16 +254,25 @@ class UserMedia extends Component{
 
     render(){
 
+        let progressRecord = {
+            width : `${this.state.percentTimeRecord}%`
+        }
+
+        let progressUpload = {
+            width : `${this.state.percentUpload}%`
+        }
+
         if(this.state.status !== 'ERROR'){
             return (
                 <div className="usermedia">
                     <div className="usermedia__player">
                         <video id="streamPlayer"></video>
+                        { (this.state.status === 'RECORDING') ? <div className="usermedia__timebar" style={ progressRecord }></div> : null }
+                        { (this.state.status === 'UPLOADING') ? <div className="usermedia__uploadbar" style={ progressUpload }></div> : null }
                     </div>
                     <div className="usermedia__controls">
-                        { (this.state.status === 'UPLOADING') ? <div className="progressbarContainer"><Progressbar percent = { this.state.percentUpload } /></div> : null }
                         { (!this.props.autoStop && this.state.status === 'RECORDING') ? <button className="btn btn-danger btn-block" onClick={ this.stopRecord } disabled = { this.state.recDisabled }>Stop</button> : null }
-                        { (this.state.status !== 'UPLOADING' && this.state.status !== 'PLAYING') ? <div className="usermedia__timer"><span className="usermedia__timer-current">00:{ this.state.timeRecord }</span><span className="usermedia__timer-spacer">/</span> <span className="usermedia__timer-total">00:{ (this.props.recordTime < 10) ? '0'+this.props.recordTime : this.props.recordTime }</span></div> : null }
+                        { (this.state.status !== 'UPLOADING' && this.state.status !== 'PLAYING') ? <div className="usermedia__timer"><span className="usermedia__timer-current">00:{ this.state.currentTimeRecord }</span><span className="usermedia__timer-spacer">/</span> <span className="usermedia__timer-total">00:{ (this.props.recordTime < 10) ? '0'+this.props.recordTime : this.props.recordTime }</span></div> : null }
                         { (this.state.status === 'STREAMING') ? <a className="usermedia__rec" onClick={ this.startRecord } disabled = { this.state.recDisabled }></a>  : null }
                         { (this.listOfDevices.length > 1) ? <button className="usermedia__switch" onClick={ this.switchCamera }>Switch Camera</button> : null }
                     </div>
