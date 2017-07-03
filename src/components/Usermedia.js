@@ -1,156 +1,332 @@
 import React, { Component } from 'react';
-import { BrowserRouter as Router, Route, Redirect, Link } from 'react-router-dom';
-import Usermedia from '../components/Usermedia';
+import * as firebase from 'firebase';
+import PropTypes from 'prop-types';
+import firebaseConfig from '../config/firebaseConfig';
 import Upload from '../components/Upload';
-import Carousel from '../components/Carousel';
-import Style from './Step1.css';
-import axios from 'axios';
+import Progressbar from './Progressbar';
 
-class Step1 extends Component{
+import fontello from '../fonts/css/fontello.css'
+import Style from './Usermedia.css'
 
+class UserMedia extends Component{
+       
     constructor(){
         super();
+        this.mediaRecorder;
+        this.videoTrack;
+        this.listOfDevices = [];
+        this.currentDevice;
+        this.timeStartRecord = 0;
+        this.videoData;
+
         this.state = {
-            videoPath : null,
-            videoSelected : 0,
-            isReadyCarousel: false
+            status : 'WAITING', //WAITING | STREAMING | RECORDING | PLAYING | UPLOADING | UPLOADED | ERROR
+            recDisabled : true,
+            currentTimeRecord: '00',
+            percentTimeRecord : 0,
+            percentUpload : 0,
         }
-        
-        this.onDragged = this.onDragged.bind(this);
+
+        if (navigator.mediaDevices !== undefined) {
+            this.listDevices();
+        }else{
+            navigator.mediaDevices = {};
+        }
+
+        this.listDevices = this.listDevices.bind(this);
+        this.setUserMedia = this.setUserMedia.bind(this);
+        this.switchCamera = this.switchCamera.bind(this);
+        this.setplayer = this.setplayer.bind(this);
+        this.startRecord = this.startRecord.bind(this);
+        this.stopRecord = this.stopRecord.bind(this);
+        this.upload = this.upload.bind(this);
         this.onUpload = this.onUpload.bind(this);
-        this.onStartRecord = this.onStartRecord.bind(this);
-        this.onStopRecord = this.onStopRecord.bind(this);
-        this.onPlayPlayer = this.onPlayPlayer.bind(this);
-        this.onPausePlayer = this.onPausePlayer.bind(this);
-        this.onStopPlayer = this.onStopPlayer.bind(this);
-        this.playComposition = this.playComposition.bind(this);    
-        this.sendVideos = this.sendVideos.bind(this);
-        this.onReadyCarousel = this.onReadyCarousel.bind(this);    
+        this.playPlayer = this.playPlayer.bind(this);
+        this.pausePlayer = this.pausePlayer.bind(this);
     }
 
-    
-    onDragged(current){
-        this.setState({
-            videoSelected : current
-        })
+    listDevices(){
+
+        var supportedConstraints = navigator.mediaDevices.getSupportedConstraints();
+        try{
+            
+            navigator.mediaDevices.enumerateDevices().then(function(devices) {
+                devices.map((device) => {
+                    if(device.kind === 'videoinput'){
+                        this.listOfDevices.push(device);
+                    }
+                });
+                (this.listOfDevices.length > 0) ? this.setUserMedia(this.listOfDevices[0].deviceId) : alert('Device is don\'t available');
+            }.bind(this));  
+
+        }catch(e){
+            console.log('Error on navigator.mediaDevices.enumerateDevices', e);
+        } 
     }
+
+    switchCamera(){
+        let availableDevice = this.listOfDevices.filter((device) => {	
+            
+            console.log(device.deviceId, this.currentDevice);
+
+            if(device.deviceId !== this.currentDevice){
+                return device;
+            }
+        });
+        (availableDevice.length > 0) ? this.setUserMedia(availableDevice[0].deviceId) : alert('Device is don\'t available');
+    }
+
+    setUserMedia(deviceId){
+        
+        (this.videoTrack) ? this.videoTrack.stop() : null;
+        
+        this.currentDevice = (typeof(deviceId) === 'string') ? deviceId : deviceId.target.value;
+
+        const constraints = { 
+            audio: false, 
+            video: {
+                width: 640,
+                height: 480,
+                deviceId: this.currentDevice ? {exact: this.currentDevice} : undefined
+            }
+        }
+
+        try{
+            
+            navigator.mediaDevices.getUserMedia(constraints).then(function(MediaStream) {
+                
+                this.setplayer(MediaStream);
+
+                this.MediaStream = MediaStream;
+                this.mediaRecorder = new MediaRecorder(this.MediaStream);
+                
+                this.mediaRecorder.onerror = function(event){
+                    console.log('error on this.mediaRecorder.onerror', event);
+                }
+
+                this.mediaRecorder.onstart = function(event){
+                    this.timeStartRecord = Date.now();
+                    this.setState({
+                        status: 'RECORDING'
+                    });
+                    (this.props.onStartRecord) ? this.props.onStartRecord() : null;//Call function on parent when the record is started                   
+                }.bind(this);
+
+                this.mediaRecorder.onstop = function(event) {
+                    (this.props.onStopRecord) ? this.props.onStopRecord() : null; //Call function on parent when the record is stopped
+                    this.videoTrack.stop(); //Stop the streaming from device
+                }.bind(this);
+                
+                this.mediaRecorder.ondataavailable = function(e) {
+                    this.videoData = e.data;
+
+                    if(this.props.autoUpload){ //Upload record
+                        this.upload()
+                    }else{
+                        this.player.srcObject = null;
+                        this.player.src = window.URL.createObjectURL(this.videoData);
+
+                        this.player.onpause = function(event){
+                            (this.props.onPausePlayer) ? this.props.onPausePlayer() : null; 
+                        }.bind(this)
+
+                        this.player.ontimeupdate = function(event){
+                            let currentTimeRecord = Math.round(event.target.currentTime); 
+                            this.setState({
+                                currentTimeRecord : (currentTimeRecord < 10 ) ? '0'+currentTimeRecord : currentTimeRecord,
+                                percentTimeRecord :  Math.round((currentTimeRecord * 100) / event.target.duration)
+                            })
+                        }.bind(this);
+
+                        this.player.onloadedmetadata = function(event) {
+                            this.setState({
+                                status: 'PLAYING'
+                            });                            
+                            event.target.controls = false;
+                            event.target.play();
+                        }.bind(this); 
+
+                        
+                        
+                    }
+                }.bind(this);//this.mediaRecorder.ondataavailable
+
+            }.bind(this)).catch(function(err) {
+                console.log('error on navigator.mediaDevices.getUserMedia', err)
+                this.setState({
+                    status : 'ERROR'
+                });
+
+            }.bind(this));//navigator.mediaDevices.getUserMedia            
+
+        }catch(err){
+            console.log('error on try navigator.mediaDevices.getUserMedia', err)
+            this.setState({
+                status : 'ERROR'
+            });
+        }
+    }
+
+    upload(){
+        console.log('UPLOAD');
+        let storageRef = firebase.storage().ref();
+        this.setState({
+            status: 'UPLOADING'
+        })
+        //UPLOAD
+        const uploadTask = storageRef.child(`video/${ Date.now() }.webm`).put(this.videoData);
+
+        uploadTask.on('state_changed', function (snapshot) {
+            this.setState({
+                percentUpload : Math.round((100 * snapshot.bytesTransferred)/snapshot.totalBytes)
+            });
+        }.bind(this), function (error) {
+            this.setState({
+                status: 'WAITING'
+            });
+        }.bind(this), function () {
+            this.setState({
+                status: 'UPLOADED'
+            });
+            let downloadURL = uploadTask.snapshot.downloadURL;
+            
+            (this.props.onUpload) ? this.onUpload(downloadURL) : null;
+            
+        }.bind(this));// uploadTask.on        
+    }
+
+    setplayer(MediaStream){
+
+        this.player = document.getElementById('player'); 
+        this.videoTrack = MediaStream.getVideoTracks()[0];        
+        
+        this.player.srcObject = MediaStream;
+
+        
+        this.player.onplaying = function(event){
+            if(event.target.srcObject === null){
+                (this.props.onPlayPlayer) ? this.props.onPlayPlayer() : null;
+            }
+        }.bind(this);
+
+        this.player.ontimeupdate = function(event){
+            if(this.timeStartRecord != 0){
+                //Calculate of current time of record
+                //(this.props.autoStop)
+                let currentTimeRecord = Math.floor((Date.now() - this.timeStartRecord) / 1000); 
+                this.setState({
+                    currentTimeRecord : (currentTimeRecord < 10 ) ? '0'+currentTimeRecord : currentTimeRecord,
+                    percentTimeRecord :  Math.round((currentTimeRecord * 100) / this.props.recordTime)
+                })
+                console.log(currentTimeRecord +'>='+ this.props.recordTime)
+                if(currentTimeRecord >= this.props.recordTime){
+                    this.player.ontimeupdate = null;
+                    this.stopRecord()
+                };
+            }
+            
+        }.bind(this); 
+
+        this.player.onloadedmetadata = function(event){
+            this.setState({
+                status : 'STREAMING'
+            })
+            this.player.play();
+        }.bind(this);
+    }
+
+    startRecord(){
+        if(typeof(this.mediaRecorder) === 'object'){
+            this.mediaRecorder.start();
+        }    
+    }//startRecord()
+
+    stopRecord(){
+        
+        if(typeof(this.mediaRecorder) === 'object'){
+            this.mediaRecorder.stop();
+        }        
+    }//stopRecord()    
 
     onUpload(path){
-        this.setState({
-            videoPath : path
-        })
-    }    
-
-    onStartRecord(){
-        let video = document.getElementById('video_'+this.state.videoSelected);
-        video.play();
+        //Call function on parent when the upload is finished
+        this.props.onUpload(path);
     }
 
-    onStopRecord(){
-        const videoSelected = document.getElementById('video_'+this.state.videoSelected);
-        console.log('videoSelected', videoSelected);
-        videoSelected.pause();
-    }    
-
-    onPlayPlayer(){
-        const videoSelected = document.getElementById('video_'+this.state.videoSelected);
-        videoSelected.play();
-    }
-    onPausePlayer(){
-        const videoSelected = document.getElementById('video_'+this.state.videoSelected);
-        videoSelected.pause();
-    }    
-    onStopPlayer(){
-        const videoSelected = document.getElementById('video_'+this.state.videoSelected);
-        videoSelected.pause();
-    }    
-
-    playComposition(){
-        const player = document.getElementById('player');
-        player.play();        
-
-        const videoSelected = document.getElementById('video_'+this.state.videoSelected);
-        videoSelected.play();        
+    playPlayer(){
+        this.player.play();
     }
 
-    sendVideos(){
-        
-        axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
-
-        axios.get('http://35.185.121.141/index.php', {
-            params: {
-                action: 'stack',
-                url: this.state.videoPath,
-                videoId : 0
-            }
-        }).then(function (response) {
-            
-            //document.location = `share/${ response.data.name }`;
-            this.props.history.push(`share/${ response.data.name }`)
-
-
-        }.bind(this)).catch(function (error) {
-            console.log(error);
-        }.bind(this));
-    }
-
-    onReadyCarousel(){
-        this.setState({
-            isReadyCarousel : true
-        });
+    pausePlayer(){
+        this.player.pause();
     }
 
     render(){
-        //Carousel
-        let layout;
-        if(window.Modernizr.getusermedia){
-            layout = <div><Usermedia 
-            recordTime = { 4 }
-            autoStop
-            onUpload = { this.onUpload }
-            onStartRecord = { this.onStartRecord }
-            onStopRecord = { this.onStopRecord }
-            onPlayPlayer = { this.onPlayPlayer }
-            onPausePlayer = { this.onPausePlayer }
-            onStopPlayer = { this.onStopPlayer }
-            /></div> 
-        }else{
-            layout = <div><Upload 
-            accept="video" 
-            index="0"
-            onupload = { this.onUpload }
-            >Upload_</Upload></div>
+
+        let progressRecord = {
+            width : `${this.state.percentTimeRecord}%`,
+            transition : 'all 100ms'
         }
-        
-        let shareButtons = <div className="col-xs-12">
-            <div className="btn-group btn-group-justified" role="group">
-                <div className="btn-group" role="group">
-                    <button type="button" className="btn btn-primary" onClick={ this.playComposition }>Play</button>
-                </div>
-                <div className="btn-group" role="group">
-                    <button type="button" className="btn btn-primary" onClick={ this.sendVideos } >Share</button>
-                </div>                                        
-            </div>                        
-        </div>        
-        
-        return(
-            <div className="row">
-                <div className="usermedia-content">
-                    {(this.state.videoPath !== null) ? <video id="videoUploaded" className="video-uploaded"><source src={ this.state.videoPath } type="video/mp4" /></video> :  layout }
-                    <div className="overlay" id="divOverlay">
-                        { (!this.state.isReadyCarousel ) ? <h3>Cargando</h3> : null }    
-                        <Carousel 
-                        onDragged = { this.onDragged }
-                        startPosition = { this.state.videoSelected }
-                        ready = { this.onReadyCarousel }
-                        /> 
+
+        let progressUpload = {
+            width : `${this.state.percentUpload}%`,
+            transition : 'all 100ms'
+        }
+
+        if(this.state.status !== 'ERROR'){
+            return (
+                <div className="usermedia">
+                    <div className="usermedia__player">
+                        <video id="player"></video>
+                    </div>
+                    <div className="usermedia__progress">
+                        { (this.state.status === 'RECORDING' || this.state.status === 'PLAYING') ? <div className="usermedia__timebar" style={ progressRecord }></div> : null }
+                        { (this.state.status === 'UPLOADING') ? <div className="usermedia__uploadbar" style={ progressUpload }></div> : null }
+                    </div>
+                    <div>
+                        { (this.state.status === 'RECORDING' && this.state.status === 'PLAYING') ? <div className="usermedia__timer"><span className="usermedia__timer-current">00:{ this.state.currentTimeRecord }</span><span className="usermedia__timer-spacer">/</span> <span className="usermedia__timer-total">00:{ (this.props.recordTime < 10) ? '0'+this.props.recordTime : this.props.recordTime }</span></div> : null }
+                        
+                        { (this.state.status === 'STREAMING') ? <a className="usermedia__rec" onClick={ this.startRecord } disabled = { this.state.recDisabled }><i className="demo-icon icon-record"></i></a>  : null }
+                        
+                        { (this.state.status === 'PLAYING') ? <div className="usermedia__controls"><a className="usermedia__rec" onClick={ this.playPlayer }><i className="demo-icon icon-play-circled"></i></a> <a className="usermedia__rec" onClick={ this.pausePlayer }><i className="demo-icon icon-pause-circle"></i></a> <a className="usermedia__rec" onClick={ this.upload }><i className="demo-icon icon-upload"></i></a></div>  : null }
+                        
+                        { (this.listOfDevices.length > 1) ? <button className="usermedia__switch" onClick={ this.switchCamera }>Switch Camera</button> : null }
                     </div>
                 </div>
-                { (this.state.videoPath !== null) ? shareButtons : null }
-            </div>
-                   
-        )         
+            )
+        }else{
+            return (
+                <Upload 
+                accept="video" 
+                onupload = { this.onUpload }
+                >Upload</Upload>
+            )            
+        }//if(this.state.getUserMediaAvailable)
     }
 }
 
-export default Step1;
+UserMedia.propTypes = {
+    recordTime: PropTypes.number,
+    autoStop : PropTypes.bool,
+    autoUpload : PropTypes.bool,
+    
+    onUpload : PropTypes.func,
+    onStartRecord : PropTypes.func,
+    onStopRecord : PropTypes.func,
+    onPlayPlayer : PropTypes.func,
+    onPausePlayer : PropTypes.func
+};
+
+UserMedia.defaultProps = {
+    recordTime : 5,
+    autoStop : true,
+    autoUpload : false,
+
+    onUpload : null,
+    onStartRecord : null,
+    onStopRecord : null,
+    onPlayPlayer : null,
+    onPausePlayer : null
+};
+
+export default UserMedia;
