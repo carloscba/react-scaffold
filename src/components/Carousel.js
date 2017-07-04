@@ -25,7 +25,7 @@ class Carousel extends Component{
         this.setState({
             current : current
         })
-        this.props.onTranslated(current, this.players[current]);
+        this.props.onTranslated(current, this.players[current], event.item.count);
     }
 
     previewVideo(event){

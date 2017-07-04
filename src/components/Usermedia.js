@@ -202,10 +202,11 @@ class UserMedia extends Component{
         
         this.player.srcObject = MediaStream;
 
-        
         this.player.onplaying = function(event){
             if(event.target.srcObject === null){
                 (this.props.onPlayPlayer) ? this.props.onPlayPlayer() : null;
+            }else{
+                (this.props.onUsermediaReady) ? this.props.onUsermediaReady(event) : null;
             }
         }.bind(this);
 
@@ -279,18 +280,20 @@ class UserMedia extends Component{
                     <div className="usermedia__player">
                         <video id="player"></video>
                     </div>
-                    <div className="usermedia__progress">
-                        { (this.state.status === 'RECORDING' || this.state.status === 'PLAYING') ? <div className="usermedia__timebar" style={ progressRecord }></div> : null }
-                        { (this.state.status === 'UPLOADING') ? <div className="usermedia__uploadbar" style={ progressUpload }></div> : null }
-                    </div>
-                    <div>
-                        { (this.state.status === 'RECORDING' && this.state.status === 'PLAYING') ? <div className="usermedia__timer"><span className="usermedia__timer-current">00:{ this.state.currentTimeRecord }</span><span className="usermedia__timer-spacer">/</span> <span className="usermedia__timer-total">00:{ (this.props.recordTime < 10) ? '0'+this.props.recordTime : this.props.recordTime }</span></div> : null }
-                        
-                        { (this.state.status === 'STREAMING') ? <a className="usermedia__rec" onClick={ this.startRecord } disabled = { this.state.recDisabled }><i className="demo-icon icon-record"></i></a>  : null }
-                        
-                        { (this.state.status === 'PLAYING') ? <div className="usermedia__controls"><a className="usermedia__rec" onClick={ this.playPlayer }><i className="demo-icon icon-play-circled"></i></a> <a className="usermedia__rec" onClick={ this.pausePlayer }><i className="demo-icon icon-pause-circle"></i></a> <a className="usermedia__rec" onClick={ this.upload }><i className="demo-icon icon-upload"></i></a></div>  : null }
-                        
-                        { (this.listOfDevices.length > 1) ? <button className="usermedia__switch" onClick={ this.switchCamera }>Switch Camera</button> : null }
+                    <div className="usermedia__options">
+                        <div className="usermedia__progress">
+                            { (this.state.status === 'RECORDING' || this.state.status === 'PLAYING') ? <div className="usermedia__timebar" style={ progressRecord }></div> : null }
+                            { (this.state.status === 'UPLOADING') ? <div className="usermedia__uploadbar" style={ progressUpload }></div> : null }
+                        </div>
+                        <div>
+                            { (this.state.status === 'RECORDING' && this.state.status === 'PLAYING') ? <div className="usermedia__timer"><span className="usermedia__timer-current">00:{ this.state.currentTimeRecord }</span><span className="usermedia__timer-spacer">/</span> <span className="usermedia__timer-total">00:{ (this.props.recordTime < 10) ? '0'+this.props.recordTime : this.props.recordTime }</span></div> : null }
+                            
+                            { (this.state.status === 'STREAMING') ? <a className="usermedia__rec" onClick={ this.startRecord } disabled = { this.state.recDisabled }><i className="demo-icon icon-record"></i></a>  : null }
+                            
+                            { (this.state.status === 'PLAYING') ? <div className="usermedia__controls"><a className="usermedia__rec" onClick={ this.playPlayer }><i className="demo-icon icon-play-circled"></i></a> <a className="usermedia__rec" onClick={ this.pausePlayer }><i className="demo-icon icon-pause-circle"></i></a> <a className="usermedia__rec" onClick={ this.upload }><i className="demo-icon icon-upload"></i></a></div>  : null }
+                            
+                            { (this.listOfDevices.length > 1) ? <button className="usermedia__switch" onClick={ this.switchCamera }>Switch Camera</button> : null }
+                        </div>
                     </div>
                 </div>
             )
@@ -310,6 +313,7 @@ UserMedia.propTypes = {
     autoStop : PropTypes.bool,
     autoUpload : PropTypes.bool,
     
+    onUsermediaReady : PropTypes.func,
     onUpload : PropTypes.func,
     onStartRecord : PropTypes.func,
     onStopRecord : PropTypes.func,
@@ -322,6 +326,7 @@ UserMedia.defaultProps = {
     autoStop : true,
     autoUpload : false,
 
+    onUsermediaReady : null,
     onUpload : null,
     onStartRecord : null,
     onStopRecord : null,
