@@ -18,16 +18,15 @@ class FbLogin extends Component{
             isAuthenticated : false
         }
         this.login = this.login.bind(this);
-        this.renderLoginButton = this.renderLoginButton.bind(this);
-        this.renderStartButton = this.renderStartButton.bind(this);
     }
 
     login(){
         const provider = new firebase.auth.FacebookAuthProvider();
         provider.addScope('read_custom_friendlists');
+        provider.addScope('publish_actions');
         //page || popup || touch
         provider.setCustomParameters({
-            'display': 'page' 
+            'display': 'touch' 
         });
         
         firebase.auth().signInWithPopup(provider).then(function(result) {
@@ -40,6 +39,9 @@ class FbLogin extends Component{
                 userData : userData,
                 isAuthenticated : true
             })
+            
+            sessionStorage.setItem('accessToken', result.credential.accessToken);
+            sessionStorage.setItem('userData', JSON.stringify(userData));
 
         }.bind(this)).catch(function(error) {
             // Handle Errors here.
@@ -50,26 +52,28 @@ class FbLogin extends Component{
         }.bind(this));
     }
 
-    renderLoginButton(){
-        return (<div><button className="fblogin__button" onClick={ this.login }>Login with Facebook</button></div>)
-    }
-
-    renderStartButton(){
-        return (
-            <div>
-               {(this.props.profileImage) ? <img src= { this.state.userData.photoURL } className="fblogin__photo" /> : null}
-               <Link to={ this.props.postLogin } className="fblogin__button">{ this.state.userData.displayName }</Link>
-            </div>) 
-    }
-
     render(){
+
+        let layoutLoginButton = (
+            <div>
+                <button className="fblogin__button" onClick={ this.login }>Login with Facebook</button>
+            </div>
+        )
+
+        let layoutStartButton = (
+            <div>
+                {(this.props.profileImage) ? <img src= { this.state.userData.photoURL } className="fblogin__photo" /> : null}
+                <Link to={ this.props.postLogin } className="fblogin__button">{ this.state.userData.displayName }</Link>
+            </div>            
+        )
+
         if(this.props.postLogin && this.props.autoPostLogin){
             <Redirect to={ this.props.postLogin }/>
         }
 
         return(
             <div className="fblogin">
-                { (this.state.accessToken === null) ? this.renderLoginButton() : this.renderStartButton() }
+                { (this.state.accessToken === null) ? layoutLoginButton : layoutStartButton }
             </div>
         )
     }
