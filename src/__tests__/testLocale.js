@@ -5,7 +5,7 @@ import Locale from '../class/Locale';
 import es from '../locale/es'
 import en from '../locale/en'
 
-it('Check nodes of locale Objects', () => {
+it('Object en is equal es ', () => {
 
     const keysEn = Object.keys(en);
     const keysEs = Object.keys(es);
@@ -14,18 +14,16 @@ it('Check nodes of locale Objects', () => {
 
 });
 
-it('Test en locale', () => {
+it('Test get value welcome', () => {
     window.locale = 'en';
     const locale = new Locale('App');
     const copy = locale.get();
-
     expect(copy.WELCOME).toEqual('Welcome');
 });
 
-it('Test es locale', () => {
+it('Test get value bienvenido', () => {
     window.locale = 'es';
     const locale = new Locale('App');
     const copy = locale.get();
-
     expect(copy.WELCOME).toEqual('Bienvenido');
 });
