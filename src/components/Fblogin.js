@@ -56,7 +56,7 @@ class FbLogin extends Component{
 
         let layoutLoginButton = (
             <div>
-                <button className="fblogin__button" onClick={ this.login }>Login with Facebook</button>
+                <button className="fblogin__button" onClick={ this.login }>{ this.props.locale.BTN_LABEL }</button>
             </div>
         )
 
@@ -82,13 +82,17 @@ class FbLogin extends Component{
 FbLogin.propTypes = {
   postLogin: PropTypes.string,
   profileImage : PropTypes.bool,
-  autoPostLogin : PropTypes.bool
+  autoPostLogin : PropTypes.bool,
+  locale : PropTypes.object
 };
 
 FbLogin.defaultProps = {
     postLogin: '',
     profileImage : false,
-    autoPostLogin : false
+    autoPostLogin : false,
+    locale : {
+        'BTN_LABEL' : 'Login with Facebook'
+    }
 };
 
 export default FbLogin;

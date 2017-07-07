@@ -13,6 +13,7 @@ class App extends Component{
             access_token : '',
             listFriends : ''
         }
+        window.locale = 'es'
     }
     render(){
         return(
