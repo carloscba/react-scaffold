@@ -3,8 +3,11 @@ import en from '../locale/en';
 
 class Locale{
     constructor	(parent){
-
-        this.parentName = Object.getPrototypeOf(parent).constructor.name;
+        if(typeof(parent) === 'string'){
+            this.parentName = parent;
+        }else{
+            this.parentName = Object.getPrototypeOf(parent).constructor.name
+        }
         
         switch(window.locale){
             case 'en':
