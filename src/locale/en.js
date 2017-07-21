@@ -8,6 +8,9 @@ export default {
             'BTN_LABEL' : 'Login with Facebook'
         }
     },
+    Terms : {
+        'title' : 'Title'
+    },
     Step1 : {
 
     }

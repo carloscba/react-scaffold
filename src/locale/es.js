@@ -8,6 +8,9 @@ export default {
             'BTN_LABEL' : 'Ingresar con Facebook'
         }
     },
+    Terms : {
+        'title' : 'Titulo'
+    },
     Step1 : {
 
     }
