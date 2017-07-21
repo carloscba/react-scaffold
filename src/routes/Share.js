@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import Style from './Share.css';
+import Style from '../templates/routes/Share.css';
 import Fbpost from '../components/Fbpost';
 import jquery from 'jquery'
 

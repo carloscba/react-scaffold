@@ -6,7 +6,7 @@ import Upload from '../components/Upload';
 import Progressbar from './Progressbar';
 
 import fontello from '../fonts/css/fontello.css'
-import Style from './Usermedia.css'
+import Style from '../templates/components/Usermedia.css'
 
 class UserMedia extends Component{
        

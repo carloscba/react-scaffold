@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import style from './Fbpost.css'
+import style from '../templates/components/Fbpost.css'
 import Fb from '../class/Fb'
 
 class Fbpost extends Component{

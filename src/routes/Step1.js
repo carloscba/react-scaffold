@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Route, Redirect, Link } from 'react-router-dom
 import Usermedia from '../components/Usermedia';
 import Upload from '../components/Upload';
 import Carousel from '../components/Carousel';
-import Style from './Step1.css';
+import Style from '../templates/routes/Step1.css';
 import axios from 'axios';
 
 class Step1 extends Component{

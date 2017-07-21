@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { BrowserRouter as Link } from 'react-router-dom';
 import logo from '../images/m8.jpg';
-import style from './Menu.css'
+import style from '../templates/components/Menu.css'
 
 class Menu extends Component{
 

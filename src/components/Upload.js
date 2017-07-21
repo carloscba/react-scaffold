@@ -3,7 +3,7 @@ import * as firebase from 'firebase';
 import firebaseConfig from '../config/firebaseConfig';
 import Progressbar from './Progressbar';
 import PropTypes from 'prop-types';
-import style from './Upload.css';
+import style from '../templates/components/Upload.css';
 
 const propTypes = {
     onupload : PropTypes.func

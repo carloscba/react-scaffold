@@ -4,7 +4,7 @@ import * as firebase from 'firebase'
 import firebaseConfig from '../config/firebaseConfig'
 import m8logo from '../images/m8.jpg';
 import PropTypes from 'prop-types';
-import style from './Fblogin.css'
+import style from '../templates/components/Fblogin.css'
 
 firebase.initializeApp(firebaseConfig)
 

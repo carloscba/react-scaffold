@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import style from './Carousel.css';
+import style from '../templates/components/Carousel.css';
 import data from './Carousel.json';
 import PropTypes from 'prop-types';
 import OwlCarousel from 'react-owl-carousel';
