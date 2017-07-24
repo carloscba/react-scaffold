@@ -1,31 +1,26 @@
-.step1Container{
-    max-width: 320px;
-    width: 100%;
-}
+.step1Container {
+  max-width: 320px;
+  width: 100%; }
 
-.container-videos{
-    height: 290px;
-}
+.container-videos {
+  height: 290px; }
 
-.usermedia{
-    width: 100%;
-    position: relative;
-}
+.usermedia {
+  width: 100%;
+  position: relative; }
 
-.videoSelected{
-    width: 100%;
-    max-width: 320px;    
-}
-.videoUploaded{
-    width: 100%;
-    max-width: 320px;    
-}
+.videoSelected {
+  width: 100%;
+  max-width: 320px; }
 
-.overlay{
-    width: 100%;
-    max-width : 320px;
-    height: 120px;
-    background-color: #000;
-    position: absolute;
-    top: 120px;
-}
+.videoUploaded {
+  width: 100%;
+  max-width: 320px; }
+
+.overlay {
+  width: 100%;
+  max-width: 320px;
+  height: 120px;
+  background-color: #000;
+  position: absolute;
+  top: 120px; }

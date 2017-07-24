@@ -1,7 +1,5 @@
-input[type=file]{
-    display: none;
-}
+input[type=file] {
+  display: none; }
 
-.img-upload{
-    width: 100%;
-}
+.img-upload {
+  width: 100%; }

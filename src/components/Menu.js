@@ -27,6 +27,9 @@ class Menu extends Component{
                             <img alt="Brand" src = { logo } width="60" />
                         </a>
                     </div>
+                    <ul className="nav navbar-nav navbar-right">
+                        <li><a href="/test">Test</a></li>
+                    </ul>  
                 </div>
                 </nav>
             </div>

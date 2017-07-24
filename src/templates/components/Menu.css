@@ -1,5 +1,12 @@
-.navbar{
-    background-color: #000;
-    border: 0px;
-    border-radius: 0;
-}
+.navbar {
+  background-color: #000;
+  border: 0px;
+  border-radius: 0;
+  height: 60px; }
+
+.navbar-nav a {
+  color: #FFF !important;
+  font-weight: bold; }
+
+.navbar-nav a:hover {
+  color: #CCC !important; }
