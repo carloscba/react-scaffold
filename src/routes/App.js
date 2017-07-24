@@ -4,6 +4,7 @@ import Home from './Home'
 import Step1 from './Step1'
 import Share from './Share'
 import Terms from './Terms'
+import Test from './Test'
 import Menu from '../components/Menu'
 
 class App extends Component{
@@ -14,7 +15,7 @@ class App extends Component{
             access_token : '',
             listFriends : ''
         }
-        window.locale = 'es'
+        window.locale = 'en'
     }
     render(){
         return(
@@ -25,6 +26,7 @@ class App extends Component{
                         <Route exact path='/' component={ Home }/>
                         <Route path='/step1' component={ Step1 } />
                         <Route path='/terms' component={ Terms } />
+                        <Route path='/test' component={ Test } />
                         <Route path='/share/:video' component={ Share } />
                     </div>
                 </div>

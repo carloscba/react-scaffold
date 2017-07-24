@@ -13,5 +13,8 @@ export default {
     },
     Step1 : {
 
+    },
+    Test : {
+        'title' : 'Ruta'
     }
 };
