@@ -1,0 +1,18 @@
+$primary-background-color : #000;
+$primary-color : #FFF;
+
+/*Button config*/
+$button-background : $primary-background-color;
+$button-hover : #CCC;
+$button-radius : 15px;
+$button-padding : 15px;
+
+@mixin button-format() {
+    -webkit-border-radius: $button-radius;
+    -moz-border-radius: $button-radius;
+    -ms-border-radius: $button-radius;
+    border-radius: $button-radius;
+    padding: $button-padding;
+    border: 0px;
+          
+}

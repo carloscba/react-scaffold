@@ -1,0 +1,29 @@
+@import '../themes/default.scss';
+
+.login-google{
+
+    &__login-button {
+        /* CSS declarations for `.block__element` */
+        background-color: $button-background;
+        color: $primary-color;
+
+        @include button-format();
+    }
+    
+    &__login-button:hover { 
+        background-color: $button-hover;
+    }
+
+    &__profile-image{
+        /* CSS declarations for `.block__element` */
+    }
+
+    &__start-button{
+        /* CSS declarations for `.block__element` */        
+    }
+
+    &__username{
+
+    }
+
+}

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import Fblogin from '../components/Fblogin';
+import LoginGoogle from '../components/LoginGoogle';
 import Locale from '../class/Locale';
 
 class Home extends Component{
@@ -19,10 +19,10 @@ class Home extends Component{
 
     render(){
         return(
-            <div className='row'>
+            <div className='row home'>
                 <div className='col-xs-12 col-md-12 col-lg-12 col-xl-12'>
-                    <h2>{ this.copy.HELLO_WORLD }</h2>
-                    <Fblogin postLogin='/step1' locale={ this.copy.Fblogin } />
+                    <h2 className='home__h2'>{ this.copy.HELLO_WORLD }</h2>
+                    <LoginGoogle postLogin='/step1' />
                 </div>
             </div>
         )

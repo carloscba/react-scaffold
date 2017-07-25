@@ -6,6 +6,7 @@ class Terms extends Component{
 
     constructor(){
         super();
+        
         const copy = new Locale(this);
         this.copy = copy.get();
     }
