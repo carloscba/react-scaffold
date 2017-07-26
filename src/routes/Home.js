@@ -15,16 +15,16 @@ class Home extends Component{
             accessToken : '',
             providerData : ''
         }
-        
-        this.handleOnAuthenticate = this.handleOnAuthenticate.bind();
-        this.handleOnError = this.handleOnError.bind();
+
+        this.handleOnAuthenticate = this.handleOnAuthenticate.bind(this);
+        this.handleOnError = this.handleOnError.bind(this);
     }
     
     handleOnAuthenticate(result){
         console.log(result);
     }
 
-    handleOnerror(error){
+    handleOnError(error){
         console.log(error);
     }    
 

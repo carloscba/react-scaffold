@@ -7,11 +7,20 @@ You can find the most recent version of this guide [here](https://github.com/fac
 
 ### LoginGoogle
 
+#### Component
+
 ```js
 import LoginGoogle from '../components/LoginGoogle';
 
 class Home extends Component {
-  
+
+  constructor(){
+    super();
+     
+    this.handleOnAuthenticate = this.handleOnAuthenticate.bind(this);
+    this.handleOnError = this.handleOnError.bind(this);
+  }
+
   handleOnAuthenticate(result){
     console.log(result);
   }
@@ -28,9 +37,46 @@ class Home extends Component {
     )    
   }
 }
-    
-
 ```
+
+#### templates/components/LoginGoogle.scss
+```css
+@import '../themes/default.scss';
+
+.login-google{
+
+    display: block;
+    width: 100%;
+    text-align: center;
+
+    &__login-button {
+        /* CSS declarations for `.block__element` */
+        background-color: $button-background;
+        color: $primary-color;
+
+        @include button-format();
+    }
+    
+    &__login-button:hover { 
+        background-color: $button-hover;
+    }
+
+    &__start-button{
+        /* CSS declarations for `.block__element` */        
+    }
+
+    &__username{
+        font-weight: bold;
+    }
+
+    &__photo{
+        width: 50px;
+        display: block;
+        margin: 0 auto;
+    }    
+}
+```
+
 
 ## Create React App Table of Contents
 
