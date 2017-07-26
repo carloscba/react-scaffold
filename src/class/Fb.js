@@ -3,7 +3,7 @@ import axios from 'axios'
 class Fb{
     constructor	(){
         this.basePath = 'https://graph.facebook.com/v2.9/';
-        this.accessToken = sessionStorage.getItem('accessToken');
+        this.accessToken = sessionStorage.getItem('access_token');
         this.userData = JSON.parse(sessionStorage.getItem('userData'));
         this.validateToken(this.accessToken)
     }

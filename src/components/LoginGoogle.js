@@ -13,7 +13,7 @@ class LoginGoogle extends Component{
     constructor(){
         super();
         this.state = {
-            accessToken : null,
+            access_token : null,
             user : {},
             isAuthenticated : false
         }
@@ -33,12 +33,13 @@ class LoginGoogle extends Component{
         firebase.auth().signInWithPopup(provider).then(function(result) {
             
             this.setState({
-                accessToken : result.credential.accessToken,
+                access_token : result.credential.accessToken,
                 user : result.user,
                 isAuthenticated : true
             })
-            
-            sessionStorage.setItem('accessToken', result.credential.accessToken);
+
+            sessionStorage.setItem('provider', 'google');
+            sessionStorage.setItem('access_token', result.credential.accessToken);
             sessionStorage.setItem('user', JSON.stringify(result.user));
 
             (this.props.onAuthenticate) ? this.props.onAuthenticate(result) : null; 

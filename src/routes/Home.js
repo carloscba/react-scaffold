@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import LoginGoogle from '../components/LoginGoogle';
 import Locale from '../class/Locale';
 
+
 class Home extends Component{
 
     constructor(){
