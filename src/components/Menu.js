@@ -28,6 +28,7 @@ class Menu extends Component{
                         </a>
                     </div>
                     <ul className="nav navbar-nav navbar-right">
+                        <li><a href="/terms">Terms</a></li>
                         <li><a href="/test">Test</a></li>
                     </ul>  
                 </div>

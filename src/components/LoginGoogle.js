@@ -7,47 +7,47 @@ import style from '../templates/components/LoginGoogle.css'
 
 firebase.initializeApp(firebaseConfig)
 
+/** Component for Authenticate with google */
 class LoginGoogle extends Component{
 
     constructor(){
         super();
         this.state = {
             accessToken : null,
-            userData : {},
+            user : {},
             isAuthenticated : false
         }
         this.login = this.login.bind(this);
     }
 
+    /**
+     * Authenticate on Google
+     * https://developers.google.com/identity/protocols/googlescopes 
+     */    
     login(){
-        const provider = new firebase.auth.FacebookAuthProvider();
-        provider.addScope('read_custom_friendlists');
-        provider.addScope('publish_actions');
-        //page || popup || touch
-        provider.setCustomParameters({
-            'display': 'touch' 
-        });
+        const provider = new firebase.auth.GoogleAuthProvider();
+
+        provider.addScope('profile');
+        provider.addScope('email');
         
         firebase.auth().signInWithPopup(provider).then(function(result) {
-            //{uid: "", displayName: "", photoURL: "", email: "", providerId: "facebook.com" } 
             
-            const userData = result.user.providerData[0]
-
             this.setState({
                 accessToken : result.credential.accessToken,
-                userData : userData,
+                user : result.user,
                 isAuthenticated : true
             })
             
             sessionStorage.setItem('accessToken', result.credential.accessToken);
-            sessionStorage.setItem('userData', JSON.stringify(userData));
+            sessionStorage.setItem('user', JSON.stringify(result.user));
+
+            (this.props.onAuthenticate) ? this.props.onAuthenticate(result) : null; 
 
         }.bind(this)).catch(function(error) {
+        
             // Handle Errors here.
-            var errorCode = error.code;
-            var errorMessage = error.message;
-            var email = error.email;
-            var credential = error.credential;
+            (this.props.onError) ? this.props.onError(error) : null;
+        
         }.bind(this));
     }
 
@@ -57,38 +57,28 @@ class LoginGoogle extends Component{
 
         let layoutStartButton = (
             <div>
-                {(this.props.profileImage) ? <img src= { this.state.userData.photoURL } className="login-google__profile-image" /> : null}
-                <span className="login-google__username"> this.state.userData.displayName }</span>
-                <Link to={ this.props.postLogin } className="login-google__start-button">{ this.state.userData.displayName }</Link>
-            </div>            
+                <img className="login-google__photo" src={ this.state.user.photoURL } />
+                <span className="login-google__username">{ this.state.user.displayName }</span>
+            </div>
         )
-
-        //Automatic redirect to postLogin route or render start button
-        if(this.props.postLogin && this.props.autoPostLogin){
-            <Redirect to={ this.props.postLogin }/>
-        }else{
-            return(
-                <div className="login-google">
-                    { (this.state.accessToken === null) ? layoutLoginButton : layoutStartButton }
-                </div>
-            )
-        }
-
-
+        
+        return(
+            <div className="login-google">
+                { (!this.state.isAuthenticated) ? layoutLoginButton : layoutStartButton }
+            </div>
+        )
     }
 }
 
 LoginGoogle.propTypes = {
-  postLogin: PropTypes.string,
-  profileImage : PropTypes.bool,
-  autoPostLogin : PropTypes.bool,
-  locale : PropTypes.object
+    onAuthenticate : PropTypes.func,
+    onError : PropTypes.func,
+    locale : PropTypes.object
 };
 
 LoginGoogle.defaultProps = {
-    postLogin: '',
-    profileImage : false,
-    autoPostLogin : false,
+    onAuthenticate : false,
+    onerror : false,
     locale : {
         'BTN_LABEL' : 'Login with Google'
     }

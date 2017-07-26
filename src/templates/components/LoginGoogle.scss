@@ -2,6 +2,10 @@
 
 .login-google{
 
+    display: block;
+    width: 100%;
+    text-align: center;
+
     &__login-button {
         /* CSS declarations for `.block__element` */
         background-color: $button-background;
@@ -23,7 +27,13 @@
     }
 
     &__username{
-
+        font-weight: bold;
     }
+
+    &__photo{
+        width: 50px;
+        display: block;
+        margin: 0 auto;
+    }    
 
 }

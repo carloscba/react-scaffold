@@ -15,14 +15,25 @@ class Home extends Component{
             accessToken : '',
             providerData : ''
         }
+        
+        this.handleOnAuthenticate = this.handleOnAuthenticate.bind();
+        this.handleOnError = this.handleOnError.bind();
     }
+    
+    handleOnAuthenticate(result){
+        console.log(result);
+    }
+
+    handleOnerror(error){
+        console.log(error);
+    }    
 
     render(){
         return(
             <div className='row home'>
                 <div className='col-xs-12 col-md-12 col-lg-12 col-xl-12'>
                     <h2 className='home__h2'>{ this.copy.HELLO_WORLD }</h2>
-                    <LoginGoogle postLogin='/step1' />
+                    <LoginGoogle onAuthenticate={ this.handleOnAuthenticate } onError={ this.handleOnerror } />
                 </div>
             </div>
         )
