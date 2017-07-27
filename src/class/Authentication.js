@@ -2,7 +2,7 @@ import axios from 'axios'
 
 class Authentication{
     
-    constructor	(){    
+    constructor	(){   
         this.provider = sessionStorage.getItem('provider');
         this.access_token = sessionStorage.getItem('access_token');
     }    
@@ -12,6 +12,13 @@ class Authentication{
             case 'google':
                 const url = `https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=${this.access_token}`
                 return axios.get(url);
+            break;
+            default:
+
+                let myFirstPromise = new Promise((resolve, reject) => {
+                    reject()
+                });            
+                return myFirstPromise;
             break;
         }        
     }

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import LoginGoogle from '../components/LoginGoogle';
+
 import Locale from '../class/Locale';
 
 
@@ -16,9 +16,6 @@ class Home extends Component{
             accessToken : '',
             providerData : ''
         }
-
-        this.handleOnAuthenticate = this.handleOnAuthenticate.bind(this);
-        this.handleOnError = this.handleOnError.bind(this);
     }
     
     handleOnAuthenticate(result){
@@ -34,7 +31,6 @@ class Home extends Component{
             <div className='row home'>
                 <div className='col-xs-12 col-md-12 col-lg-12 col-xl-12'>
                     <h2 className='home__h2'>{ this.copy.HELLO_WORLD }</h2>
-                    <LoginGoogle onAuthenticate={ this.handleOnAuthenticate } onError={ this.handleOnerror } />
                 </div>
             </div>
         )
