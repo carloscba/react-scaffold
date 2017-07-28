@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
 import { BrowserRouter as Router, Route, link } from 'react-router-dom';
-import Authentication from '../class/Authentication';
 import LoginGoogle from '../components/LoginGoogle';
+
+import appReducer from '../store/reducers'
+import initialState from '../store/initialState'
 
 import Home from './Home'
 import Step1 from './Step1'
@@ -14,25 +16,23 @@ class App extends Component{
 
     constructor(){
         super();
-        this.state = {
-            isAuthenticated : false
-        }
+        this.state = initialState;
+        console.log('state', this.state);
         
-        this.auth = new Authentication();
+        this.state = appReducer(this.state, {
+            type: 'LOGIN',
+            payload : true
+        })
 
-        this.auth.check().then(
-            function(response){
-                this.setState({
-                    isAuthenticated : this.auth.isAuthenticated(response.data) 
-                })
-            }.bind(this)
-        ).catch(
-            function(e){
-                this.setState({
-                    isAuthenticated : false 
-                })
-            }.bind(this)
-        );
+        this.state = appReducer(this.state, {
+            type: 'USER.UPDATE',
+            payload : {
+                "username" : "Carlos",
+                "profile" : "imagen"
+            }
+        })        
+
+        console.log('state', this.state);
 
         this.handleOnAuthenticate = this.handleOnAuthenticate.bind(this);
         this.handleOnError = this.handleOnError.bind(this);        
@@ -55,7 +55,7 @@ class App extends Component{
             <Router>
                 <div>
                     <Menu />
-                    <h2>Authenticated { (this.state.isAuthenticated) ? 'True' : 'False' }</h2>
+                    <h2>Authenticated</h2>
                     <LoginGoogle onAuthenticate={ this.handleOnAuthenticate } onError={ this.handleOnerror } />
                     <div className='container-fluid'>
                         <Route exact path='/' component={ Home }/>

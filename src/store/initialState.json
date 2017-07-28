@@ -1,0 +1,8 @@
+{
+    "isAuthenticated" : false,
+    "user" : {
+        "username" : "",
+        "profile" : "",
+        "id" : ""
+    }
+}
