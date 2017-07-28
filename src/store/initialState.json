@@ -1,5 +1,7 @@
 {
     "isAuthenticated" : false,
+    "access_token" : "",
+    "locale" : "en",
     "user" : {
         "username" : "",
         "profile" : "",

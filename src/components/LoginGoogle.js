@@ -5,6 +5,10 @@ import firebaseConfig from '../config/firebaseConfig'
 import PropTypes from 'prop-types';
 import style from '../templates/components/LoginGoogle.css'
 
+import { createStore } from 'redux' 
+import appReducer from '../store/reducers'
+import { authenticate, actionAccesstoken } from '../store/actions'
+
 firebase.initializeApp(firebaseConfig)
 
 /** Component for Authenticate with google */
@@ -38,9 +42,16 @@ class LoginGoogle extends Component{
                 isAuthenticated : true
             })
 
+            /*
+            const store = createStore(appReducer);
+            store.subscribe(()=>{
+                console.log(store.getState());
+            })
+
+            store.dispatch(actionAccesstoken(result.credential.accessToken));            
+            */
             sessionStorage.setItem('provider', 'google');
             sessionStorage.setItem('access_token', result.credential.accessToken);
-            sessionStorage.setItem('user', JSON.stringify(result.user));
 
             (this.props.onAuthenticate) ? this.props.onAuthenticate(result) : null; 
 
@@ -53,6 +64,7 @@ class LoginGoogle extends Component{
     }
 
     render(){
+        console.log('Render componente', this.props)
 
         let layoutLoginButton = (<button className="login-google__login-button" onClick={ this.login }>{ this.props.locale.BTN_LABEL }</button>);
 
@@ -71,18 +83,22 @@ class LoginGoogle extends Component{
     }
 }
 
+
 LoginGoogle.propTypes = {
+    isAuthenticated : PropTypes.bool,
     onAuthenticate : PropTypes.func,
     onError : PropTypes.func,
     locale : PropTypes.object
 };
 
 LoginGoogle.defaultProps = {
-    onAuthenticate : false,
-    onerror : false,
+    isAuthenticated : false,
+    onAuthenticate : null,
+    onerror : null,
     locale : {
         'BTN_LABEL' : 'Login with Google'
     }
 };
+
 
 export default LoginGoogle;
