@@ -3,8 +3,7 @@
     "access_token" : "",
     "locale" : "en",
     "user" : {
-        "username" : "",
-        "profile" : "",
-        "id" : ""
+        "displayName" : "",
+        "photoURL" : ""
     }
 }

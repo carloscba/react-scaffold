@@ -24,12 +24,14 @@
 
     &__username{
         font-weight: bold;
+        display: none;
     }
 
     &__photo{
-        width: 50px;
+        width: 40px;
         display: block;
-        margin: 0 auto;
+        margin: 10px 10px;
+        border-radius: 50%;
     }    
 
 }

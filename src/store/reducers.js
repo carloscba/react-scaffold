@@ -9,7 +9,7 @@ function isAuthenticated(state = false, action){
     return state; 
 }
 
-function access_token(state = "", action){
+function access_token(state = '', action){
     
     switch(action.type){
         case 'ACCESS_TOKEN.ADD':
@@ -23,7 +23,7 @@ function access_token(state = "", action){
 
 }
 
-function locale(state = "", action){
+function locale(state = '', action){
     switch(action.type){
         case 'LOCALE.CHANGE':
             state = (typeof(action.payload) === 'string') ? action.payload : state.locale;
@@ -33,9 +33,8 @@ function locale(state = "", action){
 }
 
 function user(state = {
-        'username' : '',
-        'profile' : '',
-        'id' : ''
+        'displayName' : '',
+        'photoURL' : ''
     }, action){
     if(action.type === 'USER.UPDATE'){
         if(typeof(action.payload) === 'object'){

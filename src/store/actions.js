@@ -19,3 +19,10 @@ export function deauthenticate(){
         payload: false
     }
 }
+
+export function user(data){
+    return {
+        type: 'USER.UPDATE',
+        payload: data
+    }
+}
