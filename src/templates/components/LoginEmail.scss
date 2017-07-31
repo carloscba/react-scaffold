@@ -1,0 +1,43 @@
+@import '../themes/default.scss';
+
+.login{
+    
+    width: 100%;
+
+    &__label {
+        display: block;
+    }
+    
+    &__input-email {
+        display: block;
+    }
+    &__input-password {
+        display: block;
+    }    
+
+    &__button {
+        display: block;
+    }    
+
+}
+
+.login-create{
+    
+    width: 100%;
+
+    &__label {
+        display: block;
+    }
+    
+    &__input-email {
+        display: block;
+    }
+    &__input-password {
+        display: block;
+    }    
+
+    &__button {
+        display: block;
+    }    
+
+}

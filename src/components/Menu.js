@@ -2,7 +2,6 @@ import React, { Component } from 'react'
 import { BrowserRouter as Link } from 'react-router-dom'
 import logo from '../images/m8.jpg'
 import style from '../templates/components/Menu.css'
-import LoginGoogle from '../components/LoginGoogle'
 
 //redux
 import { connect } from 'react-redux'
@@ -26,7 +25,6 @@ class Menu extends Component{
                         <li><a href="/terms">Terms</a></li>
                         <li><a href="/test">Test</a></li>
                         { (this.props.isAuthenticated) ?  <li><a href="/terms">Url Proteted</a></li> : null }
-                        <li><LoginGoogle isAuthenticated={ this.props.isAuthenticated} onAuthenticate={ this.props.handlerOnAuthenticate} user= { this.props.user} /></li>
                     </ul>  
                 </div>
                 </nav>
