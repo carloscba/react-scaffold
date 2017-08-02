@@ -1,42 +1,59 @@
 import { combineReducers } from 'redux'
 
 function isAuthenticated(state = false, action){
-    if(action.type === 'LOGIN'){
-        if(typeof(action.payload) === 'boolean'){
-            state =  action.payload;
-        }
+    switch(action.type){
+        case 'isAuthenticated.LOGIN':
+            if(typeof(action.payload) === 'boolean'){
+                state =  action.payload;
+            }        
+        break;
+        case 'isAuthenticated.LOGOUT':
+            if(typeof(action.payload) === 'boolean'){
+                state =  action.payload;
+            }        
+        break;        
     }
     return state; 
 }
 
-function access_token(state = '', action){
-    
-    switch(action.type){
-        case 'ACCESS_TOKEN.ADD':
-            state = action.payload;
-        break
-        case 'ACCESS_TOKEN.DELETE':
-            state = '';
-        break        
-    }
-    return state;
-
-}
-
 function locale(state = '', action){
     switch(action.type){
-        case 'LOCALE.CHANGE':
+        case 'locale.UPDATE':
             state = (typeof(action.payload) === 'string') ? action.payload : state.locale;
         break
     }
     return state;
 }
 
+function credential(state = {
+    "accessToken" : "",
+    "providerId" : ""
+}, action){
+    switch(action.type){   
+        case 'credential.UPDATE':
+            state = action.payload;
+        break        
+    }
+    return state;
+}
+
+
 function user(state = {
-        'displayName' : '',
-        'photoURL' : ''
-    }, action){
-    if(action.type === 'USER.UPDATE'){
+    "displayName" : "",
+    "email" : "",
+    "photoURL" : "",
+    "uid" : ""
+}, action){
+    if(action.type === 'user.UPDATE'){
+        if(typeof(action.payload) === 'object'){
+            state =  action.payload;
+        }
+    }
+    return state; 
+}
+
+function coupons(state = {}, action){
+    if(action.type === 'coupons.UPDATE'){
         if(typeof(action.payload) === 'object'){
             state =  action.payload;
         }
@@ -45,8 +62,9 @@ function user(state = {
 }
 
 export default combineReducers({
-    access_token,
-    locale,
     isAuthenticated,
-    user
+    locale,
+    credential,
+    user,
+    coupons
 });

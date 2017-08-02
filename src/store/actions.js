@@ -1,28 +1,28 @@
 import axios from 'axios'
 
-export function actionAccesstoken(access_token){
+export function actionCredential(credential){
     return {
-        type: 'ACCESS_TOKEN.ADD',
-        payload: access_token
+        type: 'credential.UPDATE',
+        payload: credential
     }    
 }
-export function authenticate(){
+export function actionAuthenticate(type){
     return {
-        type: 'LOGIN',
-        payload: true
+        type: 'isAuthenticated.'+ type,
+        payload: (type === 'LOGIN')
     }
 }
 
-export function deauthenticate(){
+export function actionUser(data){
     return {
-        type: 'LOGIN',
-        payload: false
+        type: 'user.UPDATE',
+        payload: data
     }
 }
 
-export function user(data){
+export function actionCoupons(data){
     return {
-        type: 'USER.UPDATE',
+        type: 'coupons.UPDATE',
         payload: data
     }
 }
