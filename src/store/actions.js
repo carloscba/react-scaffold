@@ -19,10 +19,3 @@ export function actionUser(data){
         payload: data
     }
 }
-
-export function actionCoupons(data){
-    return {
-        type: 'coupons.UPDATE',
-        payload: data
-    }
-}

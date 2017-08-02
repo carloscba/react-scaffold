@@ -60,32 +60,6 @@ const mapDispatchToProps = dispatch => {
             'uid' : result.user.uid
         }));
 
-        const url = `http://dev.m8agency.com/kfc_chicknshare_json_demo/user.json?uid=${result.user.uid}`;
-        axios.get(url).then(function (response) {
-            
-            //dispatch(actionCoupons({}));
-            
-
-        }).catch(function (error) {
-            dispatch(actionCoupons(
-                [{
-                    "authorId":			"ABC789",
-                    "timeGenerated": 	"Y-m-d H:i",
-                    "timeRedeemed": 	"Y-m-d H:i",
-                    "storeId":			"555",
-                    "friendId":			"ASD567"
-                },
-                {
-                    "authorId":			"ASD567",
-                    "timeGenerated": 	"Y-m-d H:i",
-                    "timeRedeemed": 	"Y-m-d H:i",
-                    "storeId":			"333",
-                    "friendId":			"ASD567"
-                }]
-            ));
-        });
-
-
     },
     handleOnError(e){
         console.log('error', e);

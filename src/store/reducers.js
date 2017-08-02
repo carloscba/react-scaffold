@@ -52,19 +52,9 @@ function user(state = {
     return state; 
 }
 
-function coupons(state = {}, action){
-    if(action.type === 'coupons.UPDATE'){
-        if(typeof(action.payload) === 'object'){
-            state =  action.payload;
-        }
-    }
-    return state; 
-}
-
 export default combineReducers({
     isAuthenticated,
     locale,
     credential,
-    user,
-    coupons
+    user
 });

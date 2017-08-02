@@ -17,7 +17,6 @@ const saveState = () => {
 const store = storeFactory(sessionState);
 store.subscribe(()=>{
     saveState();
-    console.log(store.getState());
 })
 
 ReactDOM.render(    
