@@ -1,9 +1,14 @@
 {
     "isAuthenticated" : false,
-    "access_token" : "",
     "locale" : "en",
+    "credential" : {
+        "accessToken" : "",
+        "providerId" : ""
+    },
     "user" : {
         "displayName" : "",
-        "photoURL" : ""
+        "email" : "",
+        "photoURL" : "",
+        "uid" : ""
     }
 }

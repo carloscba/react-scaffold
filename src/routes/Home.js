@@ -1,48 +1,41 @@
 import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
-import LoginEmail from '../components/LoginEmail'
-
-import { connect } from 'react-redux'
-import { authenticate, actionAccesstoken, user } from '../store/actions'
-
+import axios from 'axios'
+import LoginFb from '../components/LoginFb'
 import Locale from '../class/Locale'
-
+import style from '../templates/routes/Home.css'
+//Redux
+import { connect } from 'react-redux'
+import { actionCredential, actionAuthenticate, actionUser, actionCoupons } from '../store/actions'
 
 class Home extends Component{
 
     constructor(){
         super();
-        
         const copy = new Locale(this);
         this.copy = copy.get();
-
-        this.state = {
-            accessToken : '',
-            providerData : ''
-        }
     }
-    
-    handleOnAuthenticate(result){
-        console.log(result);
-    }
-
-    handleOnError(error){
-        console.log(error);
-    }    
 
     render(){
+        console.log('this.props.match.params.uid', this.props.match.params.uid);
+        const layoutStart = (
+            <div className='user-data'>
+                <img src={ this.props.user.photoURL } className='user-data__photo' />
+                <span className='user-data__name'>{ this.props.user.displayName }</span>
+                <a className='user-data__button' href='./share' >Continuar</a>
+            </div>
+        );
+
         return(
             <div className='row home'>
                 <div className='col-xs-12 col-md-12 col-lg-12 col-xl-12'>
-                    <h2 className='home__h2'>{ this.copy.HELLO_WORLD }</h2>
-                    <LoginEmail method='login' onCreate={ this.handleOnAuthenticate } onError= { this.handleOnError }/>
-                    <hr />
-                    <LoginEmail method='register' onCreate={ this.handleOnAuthenticate } onError= { this.handleOnError }/>
+                    <h2 className='home__h2'>{ this.copy.title }</h2>
+                    { ( this.props.isAuthenticated ) ? layoutStart : <LoginFb onAuthenticate = { this.props.handlerOnAuthenticate } onError = { this.props.handleOnError } /> }
+                    
                 </div>
             </div>
         )
     }
-
 }
 
 const mapStateToProps = state => {
@@ -51,12 +44,22 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
   return {
     handlerOnAuthenticate(result){
-        dispatch(actionAccesstoken(result.credential.accessToken));
-        dispatch(authenticate());
-        dispatch(user({
+
+        //Set initial state
+        dispatch(actionCredential({
+            'accessToken' : result.credential.accessToken,
+            'providerId' : result.credential.providerId
+        }))
+
+        dispatch(actionAuthenticate('LOGIN'));
+        
+        dispatch(actionUser({
             'displayName' : result.user.displayName,
-            'photoURL' : result.user.photoURL            
+            'email' : result.user.email,
+            'photoURL' : result.user.photoURL,
+            'uid' : result.user.uid
         }));
+
     },
     handleOnError(e){
         console.log('error', e);

@@ -6,7 +6,7 @@ import style from '../templates/components/Menu.css'
 //redux
 import { connect } from 'react-redux'
 import appReducer from '../store/reducers'
-import { authenticate, actionAccesstoken, user } from '../store/actions'
+import { actionCredential, actionAuthenticate, actionUser, actionCoupons } from '../store/actions'
 
 
 class Menu extends Component{
@@ -41,12 +41,22 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
   return {
     handlerOnAuthenticate(result){
-        dispatch(actionAccesstoken(result.credential.accessToken));
-        dispatch(authenticate());
-        dispatch(user({
+
+        //Set initial state
+        dispatch(actionCredential({
+            'accessToken' : result.credential.accessToken,
+            'providerId' : result.credential.providerId
+        }))
+
+        dispatch(actionAuthenticate('LOGIN'));
+        
+        dispatch(actionUser({
             'displayName' : result.user.displayName,
-            'photoURL' : result.user.photoURL            
+            'email' : result.user.email,
+            'photoURL' : result.user.photoURL,
+            'uid' : result.user.uid
         }));
+
     },
     handleOnError(e){
         console.log('error', e);
