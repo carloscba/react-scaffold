@@ -1,5 +1,2 @@
-@import 'themes/default.scss';
-
-body{
-    background-color: $primary-color;
-}
+$body-bg : #000;
+@import 'bootstrap/stylesheets/_bootstrap';
