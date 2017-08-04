@@ -43,6 +43,9 @@ class UserMedia extends Component{
         this.onUpload = this.onUpload.bind(this);
         this.playPlayer = this.playPlayer.bind(this);
         this.pausePlayer = this.pausePlayer.bind(this);
+        this.takePhoto = this.takePhoto.bind(this);
+        this.cancelPhoto = this.cancelPhoto.bind(this);
+        this.confirmPhoto = this.confirmPhoto.bind(this);
     }
 
     listDevices(){
@@ -168,7 +171,7 @@ class UserMedia extends Component{
     }
 
     upload(){
-        console.log('UPLOAD');
+        
         let storageRef = firebase.storage().ref();
         this.setState({
             status: 'UPLOADING'
@@ -262,6 +265,54 @@ class UserMedia extends Component{
         this.player.pause();
     }
 
+    takePhoto(){
+        this.setState({
+            status : 'TAKED'
+        })
+        this.player.pause();
+    }
+    cancelPhoto(){
+        this.setState({
+            status : 'STREAMING'
+        })        
+        this.player.play();
+    }    
+
+    confirmPhoto(){
+        const canvas = document.getElementById('canvas');
+        const context = canvas.getContext('2d');
+        canvas.width = 320;
+        canvas.height = 240;
+        context.drawImage(this.player, 0, 0, 320, 240);
+
+        var data = canvas.toBlob(function(response){
+            
+            let storageRef = firebase.storage().ref();
+            this.setState({
+                status: 'UPLOADING'
+            })
+            //UPLOAD
+            const uploadTask = storageRef.child(`photo/${ Date.now() }.png`).put(response);
+
+            uploadTask.on('state_changed', function (snapshot) {
+                this.setState({
+                    percentUpload : Math.round((100 * snapshot.bytesTransferred)/snapshot.totalBytes)
+                });
+            }.bind(this), function (error) {
+                this.setState({
+                    status: 'WAITING'
+                });
+            }.bind(this), function () {
+                this.setState({
+                    status: 'UPLOADED'
+                });
+                let downloadURL = uploadTask.snapshot.downloadURL;
+                (this.props.onUpload) ? this.onUpload(downloadURL) : null;
+                
+            }.bind(this));// uploadTask.on 
+        }.bind(this));
+    }
+
     render(){
 
         let progressRecord = {
@@ -274,9 +325,27 @@ class UserMedia extends Component{
             transition : 'all 100ms'
         }
 
+        let photoControl = (
+            <div>
+                { (this.state.status === 'TAKED') ?<button onClick={ this.cancelPhoto }>Cancelar</button>  : null }
+                { (this.state.status === 'STREAMING') ? <button onClick={ this.takePhoto }>Tomar Foto</button>  : null }
+                { (this.state.status === 'TAKED') ?<button onClick={ this.confirmPhoto }>Confirmar</button>  : null }
+                
+            </div>
+        )
+        let videoControl = (
+            <div>
+                { (this.state.status === 'RECORDING' && this.state.status === 'PLAYING') ? <div className="usermedia__timer"><span className="usermedia__timer-current">00:{ this.state.currentTimeRecord }</span><span className="usermedia__timer-spacer">/</span> <span className="usermedia__timer-total">00:{ (this.props.recordTime < 10) ? '0'+this.props.recordTime : this.props.recordTime }</span></div> : null }
+                { (this.state.status === 'STREAMING') ? <a className="usermedia__rec" onClick={ this.startRecord } disabled = { this.state.recDisabled }><i className="demo-icon icon-record"></i></a>  : null }
+                { (this.state.status === 'PLAYING') ? <div className="usermedia__controls"><a className="usermedia__rec" onClick={ this.playPlayer }><i className="demo-icon icon-play-circled"></i></a> <a className="usermedia__rec" onClick={ this.pausePlayer }><i className="demo-icon icon-pause-circle"></i></a> <a className="usermedia__rec" onClick={ this.upload }><i className="demo-icon icon-upload"></i></a></div>  : null }
+                { (this.listOfDevices.length > 1) ? <button className="usermedia__switch" onClick={ this.switchCamera }>Switch Camera</button> : null }
+            </div>            
+        )
+
         if(this.state.status !== 'ERROR'){
             return (
                 <div className="usermedia">
+                    <canvas id="canvas" style= { {display:'none'} }></canvas>
                     <div className="usermedia__player">
                         <video id="player"></video>
                     </div>
@@ -285,15 +354,8 @@ class UserMedia extends Component{
                             { (this.state.status === 'RECORDING' || this.state.status === 'PLAYING') ? <div className="usermedia__timebar" style={ progressRecord }></div> : null }
                             { (this.state.status === 'UPLOADING') ? <div className="usermedia__uploadbar" style={ progressUpload }></div> : null }
                         </div>
-                        <div>
-                            { (this.state.status === 'RECORDING' && this.state.status === 'PLAYING') ? <div className="usermedia__timer"><span className="usermedia__timer-current">00:{ this.state.currentTimeRecord }</span><span className="usermedia__timer-spacer">/</span> <span className="usermedia__timer-total">00:{ (this.props.recordTime < 10) ? '0'+this.props.recordTime : this.props.recordTime }</span></div> : null }
-                            
-                            { (this.state.status === 'STREAMING') ? <a className="usermedia__rec" onClick={ this.startRecord } disabled = { this.state.recDisabled }><i className="demo-icon icon-record"></i></a>  : null }
-                            
-                            { (this.state.status === 'PLAYING') ? <div className="usermedia__controls"><a className="usermedia__rec" onClick={ this.playPlayer }><i className="demo-icon icon-play-circled"></i></a> <a className="usermedia__rec" onClick={ this.pausePlayer }><i className="demo-icon icon-pause-circle"></i></a> <a className="usermedia__rec" onClick={ this.upload }><i className="demo-icon icon-upload"></i></a></div>  : null }
-                            
-                            { (this.listOfDevices.length > 1) ? <button className="usermedia__switch" onClick={ this.switchCamera }>Switch Camera</button> : null }
-                        </div>
+                        { (!this.props.photoMode ) ? videoControl : photoControl }
+                        
                     </div>
                 </div>
             )
@@ -309,6 +371,7 @@ class UserMedia extends Component{
 }
 
 UserMedia.propTypes = {
+    photoMode : PropTypes.bool,
     recordTime: PropTypes.number,
     autoStop : PropTypes.bool,
     autoUpload : PropTypes.bool,
@@ -322,6 +385,7 @@ UserMedia.propTypes = {
 };
 
 UserMedia.defaultProps = {
+    photoMode : false,
     recordTime : 5,
     autoStop : true,
     autoUpload : false,
