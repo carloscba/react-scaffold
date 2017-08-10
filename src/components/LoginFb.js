@@ -24,28 +24,36 @@ class LoginFb extends Component{
      * Authenticate on Facebook
      */    
     login(){
+        /*
+        firebase.auth().getRedirectResult().then(function(result) {
+            if (result.credential) {
+                this.props.handlerOnAuthenticate(result)
+            }
+        }.bind(this));        
+        */
         const provider = new firebase.auth.FacebookAuthProvider();
         provider.addScope('publish_actions');
         //page || popup || touch
         provider.setCustomParameters({
-            'display': 'touch' 
+            'display' : 'page',
         });
         
-        firebase.auth().signInWithPopup(provider).then(function(result) {
+        firebase.auth().signInWithRedirect(provider)
 
-            (this.props.onAuthenticate) ? this.props.onAuthenticate(result) : null; 
-
-        }.bind(this)).catch(function(error) {
-        
-            // Handle Errors here.
-            (this.props.onError) ? this.props.onError(error) : null;
-        
-        }.bind(this));
     }
 
     render(){
 
-        let layoutLoginButton = (<button className="login-fb__login-button" onClick={ this.login }>{ this.props.locale.BTN_LABEL }</button>);
+        let layoutLoginButton = (
+            <div>
+                <span className="login-fb__uptext">
+                    Conéctate con tu cuenta<br />
+                    de Facebook y recibe<br />
+                    tu mitad de ticket.
+                </span>
+                <button className="login-fb__login-button" onClick={ this.login }>{ this.props.locale.BTN_LABEL }</button>
+            </div>
+        );
 
         let layoutStartButton = (
             <div>

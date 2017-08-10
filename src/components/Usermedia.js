@@ -5,7 +5,7 @@ import firebaseConfig from '../config/firebaseConfig';
 import Upload from '../components/Upload';
 import Progressbar from './Progressbar';
 
-import fontello from '../fonts/css/fontello.css'
+import fontello from '../fonts/fontello/css/fontello.css'
 import Style from '../templates/components/Usermedia.css'
 
 class UserMedia extends Component{
@@ -59,24 +59,24 @@ class UserMedia extends Component{
                         this.listOfDevices.push(device);
                     }
                 });
-                (this.listOfDevices.length > 0) ? this.setUserMedia(this.listOfDevices[0].deviceId) : alert('Device is don\'t available');
+                (this.listOfDevices.length > 0) ? this.setUserMedia(this.listOfDevices[0].deviceId) : this.setState({'status' : 'ERROR'});
             }.bind(this));  
 
         }catch(e){
-            console.log('Error on navigator.mediaDevices.enumerateDevices', e);
+            //console.log('Error on navigator.mediaDevices.enumerateDevices', e);
         } 
     }
 
     switchCamera(){
         let availableDevice = this.listOfDevices.filter((device) => {	
             
-            console.log(device.deviceId, this.currentDevice);
+            //console.log(device.deviceId, this.currentDevice);
 
             if(device.deviceId !== this.currentDevice){
                 return device;
             }
         });
-        (availableDevice.length > 0) ? this.setUserMedia(availableDevice[0].deviceId) : alert('Device is don\'t available');
+        (availableDevice.length > 0) ? this.setUserMedia(availableDevice[0].deviceId) : this.setState({'status' : 'ERROR'});
     }
 
     setUserMedia(deviceId){
@@ -104,7 +104,7 @@ class UserMedia extends Component{
                 this.mediaRecorder = new MediaRecorder(this.MediaStream);
                 
                 this.mediaRecorder.onerror = function(event){
-                    console.log('error on this.mediaRecorder.onerror', event);
+                    //console.log('error on this.mediaRecorder.onerror', event);
                 }
 
                 this.mediaRecorder.onstart = function(event){
@@ -155,7 +155,7 @@ class UserMedia extends Component{
                 }.bind(this);//this.mediaRecorder.ondataavailable
 
             }.bind(this)).catch(function(err) {
-                console.log('error on navigator.mediaDevices.getUserMedia', err)
+                //console.log('error on navigator.mediaDevices.getUserMedia', err)
                 this.setState({
                     status : 'ERROR'
                 });
@@ -163,7 +163,7 @@ class UserMedia extends Component{
             }.bind(this));//navigator.mediaDevices.getUserMedia            
 
         }catch(err){
-            console.log('error on try navigator.mediaDevices.getUserMedia', err)
+            //console.log('error on try navigator.mediaDevices.getUserMedia', err)
             this.setState({
                 status : 'ERROR'
             });
@@ -222,7 +222,7 @@ class UserMedia extends Component{
                     currentTimeRecord : (currentTimeRecord < 10 ) ? '0'+currentTimeRecord : currentTimeRecord,
                     percentTimeRecord :  Math.round((currentTimeRecord * 100) / this.props.recordTime)
                 })
-                console.log(currentTimeRecord +'>='+ this.props.recordTime)
+                //console.log(currentTimeRecord +'>='+ this.props.recordTime)
                 if(currentTimeRecord >= this.props.recordTime){
                     this.player.ontimeupdate = null;
                     this.stopRecord()
@@ -281,12 +281,16 @@ class UserMedia extends Component{
     confirmPhoto(){
         const canvas = document.getElementById('canvas');
         const context = canvas.getContext('2d');
-        canvas.width = 320;
-        canvas.height = 240;
-        context.drawImage(this.player, 0, 0, 320, 240);
+        
+        canvas.width = this.player.offsetWidth;
+        canvas.height = this.player.offsetHeight;
+        
+        context.drawImage(this.player, 0, 0, this.player.offsetWidth, this.player.offsetHeight);
 
         var data = canvas.toBlob(function(response){
             
+            this.player.srcObject = null;
+
             let storageRef = firebase.storage().ref();
             this.setState({
                 status: 'UPLOADING'
@@ -327,10 +331,10 @@ class UserMedia extends Component{
 
         let photoControl = (
             <div>
-                { (this.state.status === 'TAKED') ?<button onClick={ this.cancelPhoto }>Cancelar</button>  : null }
-                { (this.state.status === 'STREAMING') ? <button onClick={ this.takePhoto }>Tomar Foto</button>  : null }
-                { (this.state.status === 'TAKED') ?<button onClick={ this.confirmPhoto }>Confirmar</button>  : null }
-                
+                <img className='usermedia__chicknshare' alt='ChicknShare' src={ require('../images/chicknshare_short.png') } />
+                { (this.state.status === 'STREAMING') ? <img className='usermedia__selfie' alt='SACAR SELFIE' onClick={ this.takePhoto } src={ require('../images/usermedia__selfie.png') } />  : null }
+                { (this.state.status === 'TAKED') ?<button className='usermedia__cancelar' onClick={ this.cancelPhoto }>cancelar</button>  : null }
+                { (this.state.status === 'TAKED') ?<button className='usermedia__compartir' onClick={ this.confirmPhoto }>COMPARTIR</button>  : null }
             </div>
         )
         let videoControl = (
@@ -344,7 +348,7 @@ class UserMedia extends Component{
 
         if(this.state.status !== 'ERROR'){
             return (
-                <div className="usermedia">
+                <div className="row usermedia">
                     <canvas id="canvas" style= { {display:'none'} }></canvas>
                     <div className="usermedia__player">
                         <video id="player"></video>
@@ -362,7 +366,7 @@ class UserMedia extends Component{
         }else{
             return (
                 <Upload 
-                accept="video" 
+                accept="image" 
                 onupload = { this.onUpload }
                 >Upload</Upload>
             )            
