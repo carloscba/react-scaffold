@@ -331,8 +331,7 @@ class UserMedia extends Component{
 
         let photoControl = (
             <div>
-                <img className='usermedia__chicknshare' alt='ChicknShare' src={ require('../images/chicknshare_short.png') } />
-                { (this.state.status === 'STREAMING') ? <img className='usermedia__selfie' alt='SACAR SELFIE' onClick={ this.takePhoto } src={ require('../images/usermedia__selfie.png') } />  : null }
+                { (this.state.status === 'STREAMING') ? <a href="#" onClick={ this.takePhoto } >Tomar foto</a>  : null }
                 { (this.state.status === 'TAKED') ?<button className='usermedia__cancelar' onClick={ this.cancelPhoto }>cancelar</button>  : null }
                 { (this.state.status === 'TAKED') ?<button className='usermedia__compartir' onClick={ this.confirmPhoto }>COMPARTIR</button>  : null }
             </div>

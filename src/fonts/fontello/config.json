@@ -61,9 +61,27 @@
       "src": "fontawesome"
     },
     {
+      "uid": "815503841e980c848f55e0271deacead",
+      "css": "link",
+      "code": 59395,
+      "src": "entypo"
+    },
+    {
+      "uid": "8da3ac534210aae9c0f0e13804c1df97",
+      "css": "cancel-1",
+      "code": 59396,
+      "src": "websymbols"
+    },
+    {
+      "uid": "3c4a596e8ee3584c4c9e7002371db19f",
+      "css": "link-1",
+      "code": 59397,
+      "src": "websymbols"
+    },
+    {
       "uid": "dc3f1d5b1d006f7f7b3b6295eccab9da",
       "css": "camera",
-      "code": 59395,
+      "code": 59398,
       "src": "fontawesome"
     }
   ]

@@ -46,11 +46,6 @@ class LoginFb extends Component{
 
         let layoutLoginButton = (
             <div>
-                <span className="login-fb__uptext">
-                    Conéctate con tu cuenta<br />
-                    de Facebook y recibe<br />
-                    tu mitad de ticket.
-                </span>
                 <button className="login-fb__login-button" onClick={ this.login }>{ this.props.locale.BTN_LABEL }</button>
             </div>
         );

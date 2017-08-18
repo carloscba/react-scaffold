@@ -2,14 +2,12 @@ import es from '../locale/es';
 import en from '../locale/en';
 
 class Locale{
-    constructor	(parent){
-        if(typeof(parent) === 'string'){
-            this.parentName = parent;
-        }else{
-            this.parentName = Object.getPrototypeOf(parent).constructor.name
-        }
+    constructor	(){
         
-        switch(window.locale){
+    }
+
+    get(container, locale){
+        switch(locale){
             case 'en':
                 this.copy = en;
             break;
@@ -17,13 +15,10 @@ class Locale{
                 this.copy = es;
             break;
             default:
-                this.copy = en;
+                this.copy = es;
             break;                        
-        }
-    }
-
-    get(container){
-        return (container) ? this.copy[container] : this.copy[this.parentName];
+        }        
+        return this.copy[container];
     }
 
 }

@@ -17,22 +17,7 @@ class Fbshare extends Component{
         const url = `https://www.facebook.com/dialog/share?app_id=${appId}&href=${this.props.url}&redirect_uri=${this.props.redirect_uri}&display=page`;
 
         window.location = url;
-        /*
-        window.FB.ui({
-            method: 'share',
-            redirect_uri : 'https://31a41ce7.ngrok.io/share',
-            display: 'page',
-            //mobile_iframe: true,
-            href: this.props.url,
-            quote : this.props.quote
-        }, function(response){
-            if(response){
-                (this.props.onShare) ? this.props.onShare(response) : null;
-            }else{
-                (this.props.onError) ? this.props.onError() : null;
-            }
-        }.bind(this));        
-        */
+
     }
 
     render(){

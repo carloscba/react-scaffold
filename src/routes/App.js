@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Route, link } from 'react-router-dom'
 import { connect } from 'react-redux'
 
 import Home from './Home'
+import Authenticate from './Home'
 import Step1 from './Step1'
 import Share from './Share'
 import Terms from './Terms'
@@ -25,6 +26,7 @@ class App extends Component{
                     <Menu />
                     <div className='container-fluid'>
                         <Route exact path='/' component={ Home }/>
+                        <Route path='/authenticate' component={ Authenticate } />
                         <Route path='/step1' component={ Step1 } />
                         <Route path='/terms' component={ Terms } />
                         <Route path='/test' component={ Test } />

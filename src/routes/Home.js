@@ -17,7 +17,7 @@ class Home extends Component{
     }
 
     render(){
-        console.log('this.props.match.params.uid', this.props.match.params.uid);
+        const copy = new Locale().get('Home', this.props.locale);
         const layoutStart = (
             <div className='user-data'>
                 <img src={ this.props.user.photoURL } className='user-data__photo' />
@@ -29,8 +29,8 @@ class Home extends Component{
         return(
             <div className='row home'>
                 <div className='col-xs-12 col-md-12 col-lg-12 col-xl-12'>
-                    <h2 className='home__h2'>{ this.copy.title }</h2>
-                    { ( this.props.isAuthenticated ) ? layoutStart : <LoginFb onAuthenticate = { this.props.handlerOnAuthenticate } onError = { this.props.handleOnError } /> }
+                    <h2 className='home__h2'>{ copy.title }</h2>
+                    { ( this.props.isAuthenticated ) ? <Link to='authenticate'>Authenticate</Link> : null }
                     
                 </div>
             </div>
@@ -41,30 +41,5 @@ class Home extends Component{
 const mapStateToProps = state => {
     return state
 }
-const mapDispatchToProps = dispatch => {
-  return {
-    handlerOnAuthenticate(result){
 
-        //Set initial state
-        dispatch(actionCredential({
-            'accessToken' : result.credential.accessToken,
-            'providerId' : result.credential.providerId
-        }))
-
-        dispatch(actionAuthenticate('LOGIN'));
-        
-        dispatch(actionUser({
-            'displayName' : result.user.displayName,
-            'email' : result.user.email,
-            'photoURL' : result.user.photoURL,
-            'uid' : result.user.uid
-        }));
-
-    },
-    handleOnError(e){
-        console.log('error', e);
-    } 
-  }
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(Home);
+export default connect(mapStateToProps)(Home);

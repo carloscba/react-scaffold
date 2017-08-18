@@ -3,6 +3,7 @@ export default {
         'WELCOME'   : 'Welcome',
     },
     Home : {
+        'title' : 'Home',
         'HELLO_WORLD' : 'Hello World',
         Fblogin : {
             'BTN_LABEL' : 'Login with Facebook'
