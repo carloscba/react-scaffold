@@ -27,12 +27,9 @@ class Home extends Component{
         );
 
         return(
-            <div className='row home'>
-                <div className='col-xs-12 col-md-12 col-lg-12 col-xl-12'>
-                    <h2 className='home__h2'>{ copy.title }</h2>
-                    { ( this.props.isAuthenticated ) ? <Link to='authenticate'>Authenticate</Link> : null }
-                    
-                </div>
+            <div>
+                <h2 className='home__h2'>{ copy.title }</h2>
+                { ( this.props.isAuthenticated ) ? <Link to='authenticate'>Authenticate</Link> : null }
             </div>
         )
     }
