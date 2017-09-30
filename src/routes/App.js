@@ -22,13 +22,13 @@ import Test from './Test'
 import Menu from '../components/Menu'
 
 class App extends Component{
-    
+
     constructor(){
         super();
 
         this.theme = createMuiTheme({
             palette: {
-                primary: green, // Purple and green play nicely together.
+                primary: red, // Purple and green play nicely together.
                 secondary: {
                     ...purple,
                     A400: '#00e677',
@@ -37,18 +37,20 @@ class App extends Component{
             },
         });
 
-        this.classRoot = {
-            flexGrow: 1,
-            marginTop: 30,
+        this.style = {
+          classRoot : {
+              flexGrow: 1,
+              marginTop: 30,
+          }
         }
+
     }
 
     render(){
-
         return(
             <Router>
-                <MuiThemeProvider theme={ this.theme }>
-                    <div className={ this.classRoot }>
+                <MuiThemeProvider>
+                    <div className={ this.style.classRoot }>
                         <Grid spacing={ 24 }>
                             <Grid item xs={ 12 }>
                                 <ButtonAppBar />
@@ -67,7 +69,6 @@ class App extends Component{
             </Router>
         )
     }
-
 }
 
 const mapStateToProps = state => {

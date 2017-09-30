@@ -26,11 +26,12 @@
       <meta property="og:type"          content="website" />
       <meta property="og:title"         content="Your Website Title" />
       <meta property="og:description"   content="Your description" />
-      <meta property="og:image"         content="http://www.your-domain.com/path/image.jpg" />    
+      <meta property="og:image"         content="http://www.your-domain.com/path/image.jpg" />
       <script src="./modernizr.js" async></script>
   </head>
   <body>
     <script>
+      window.env = 'dev';
       window.fbAsyncInit = function() {
         FB.init({
           appId            : '103842260222273',
@@ -41,7 +42,7 @@
         FB.AppEvents.logPageView();
       };
 
-   
+
 
       (function(d, s, id){
         var js, fjs = d.getElementsByTagName(s)[0];
@@ -50,7 +51,7 @@
         js.src = "//connect.facebook.net/en_US/sdk.js";
         fjs.parentNode.insertBefore(js, fjs);
       }(document, 'script', 'facebook-jssdk'));
-    </script>    
+    </script>
     <noscript>
       You need to enable JavaScript to run this app.
     </noscript>

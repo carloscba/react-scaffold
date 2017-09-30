@@ -1,6 +1,9 @@
 .home{
     /* CSS declarations for `.block` */
-
+    &__paper-login{
+      width: 90%;
+      margin: 0 auto;
+    }
     &__h2 {
         /* CSS declarations for `.block__element` */
     }
