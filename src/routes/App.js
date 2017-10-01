@@ -14,10 +14,8 @@ import { connect } from 'react-redux'
 //Routes
 import Home from './Home'
 import Authenticate from './Home'
-import Step1 from './Step1'
-import Share from './Share'
+import List from './List'
 import Terms from './Terms'
-import Test from './Test'
 //Components
 import Menu from '../components/Menu'
 
@@ -58,10 +56,8 @@ class App extends Component{
                             <Grid item xs={12}>
                                 <Route exact path='/' component={ Home }/>
                                 <Route path='/authenticate' component={ Authenticate } />
-                                <Route path='/step1' component={ Step1 } />
                                 <Route path='/terms' component={ Terms } />
-                                <Route path='/test' component={ Test } />
-                                <Route path='/share/:video' component={ Share } />
+                                <Route path='/list' component={ List } />
                             </Grid>
                         </Grid>
                     </div>
