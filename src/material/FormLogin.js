@@ -13,6 +13,7 @@ import DialogError from '../material/DialogError'
 const styles = {
   paper : {
     width: '100%',
+    marginTop : 30,
     padding : 15,
     textAlign: 'center',
     display: 'inline-block'
