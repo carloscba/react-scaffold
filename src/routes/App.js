@@ -1,19 +1,17 @@
 //React
 import React, { Component } from 'react'
 import { BrowserRouter as Router, Route, link } from 'react-router-dom'
+import style from '../templates/routes/app.css'
 //Material
 import { MuiThemeProvider, createMuiTheme } from 'material-ui/styles';
-import Grid from 'material-ui/Grid';
-import purple from 'material-ui/colors/purple';
-import green from 'material-ui/colors/green';
-import red from 'material-ui/colors/red';
-import Button from 'material-ui/Button';
 import ButtonAppBar from '../material/ButtonAppBar'
+import Button from 'material-ui/Button';
+import AddIcon from 'material-ui-icons/Camera';
 //Redux
 import { connect } from 'react-redux'
 //Routes
 import Home from './Home'
-import Authenticate from './Home'
+import Authenticate from './Authenticate'
 import List from './List'
 import Terms from './Terms'
 //Components
@@ -23,46 +21,22 @@ class App extends Component{
 
     constructor(){
         super();
-
-        this.theme = createMuiTheme({
-            palette: {
-                primary: red, // Purple and green play nicely together.
-                secondary: {
-                    ...purple,
-                    A400: '#00e677',
-                },
-                error: red,
-            },
-        });
-
-        this.style = {
-          classRoot : {
-              flexGrow: 1,
-              marginTop: 30,
-          }
-        }
-
     }
 
     render(){
+        const theme = createMuiTheme();
         return(
+            <MuiThemeProvider theme={theme}>
             <Router>
-                <MuiThemeProvider>
-                    <div className={ this.style.classRoot }>
-                        <Grid spacing={ 24 }>
-                            <Grid item xs={ 12 }>
-                                <ButtonAppBar />
-                            </Grid>
-                            <Grid item xs={12}>
-                                <Route exact path='/' component={ Home }/>
-                                <Route path='/authenticate' component={ Authenticate } />
-                                <Route path='/terms' component={ Terms } />
-                                <Route path='/list' component={ List } />
-                            </Grid>
-                        </Grid>
-                    </div>
-                </MuiThemeProvider>
+                <div>
+                    <ButtonAppBar />
+                    <Route exact path='/' component={ Home }/>
+                    <Route exact path='/authenticate' component={ Authenticate } />
+                    <Route path='/terms' component={ Terms } />
+                                        
+                </div>
             </Router>
+            </MuiThemeProvider>
         )
     }
 }

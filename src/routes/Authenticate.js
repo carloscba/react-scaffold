@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import style from '../templates/routes/Authenticate.css'
-import Working from '../components/Working'
+import Working from '../material/Working'
 //Redux
 import { connect } from 'react-redux'
-import { actionCredential, actionAuthenticate, actionUser, actionError } from '../store/actions'
+import { actionCredential, actionAuthenticate, actionUser} from '../store/actions'
 
 //Firebase
 import * as firebase from 'firebase'
@@ -21,7 +21,7 @@ class Callback extends Component{
             firebase.auth().getRedirectResult().then(function(result) {
                 
                 if (result.credential) {
-                    this.props.handlerOnAuthenticate(result, this.props)                
+                    //this.props.handlerOnAuthenticate(result, this.props)                
                 }
 
             }.bind(this))
@@ -32,28 +32,19 @@ class Callback extends Component{
             }.bind(this));            
 
         }else{
-
             //Si no llego desde firebase inicio proceso de login
             const provider = new firebase.auth.FacebookAuthProvider();
             provider.setCustomParameters({
                 'display' : 'page',
             });
 
-            const signin = firebase.auth().signInWithRedirect(provider);   
+            //const signin = firebase.auth().signInWithRedirect(provider);   
         }
    
     }
 
     render(){
-        return(
-            <div className='row home'>
-                <div className='col-xs-12'>
-                    <img className='home__chicknshare' src={ require('../images/chicknshare_logo.png') } alt='ChicknShare' />
-                </div>
-                <div className='home__working'><Working isWorking /></div>
-            </div>
-
-        )
+        return(<Working open={ true } />)
     }
 
 }
@@ -63,18 +54,6 @@ const mapStateToProps = state => {
 }
 const mapDispatchToProps = dispatch => {
   return {
-    
-    clearError(){
-        console.log('clearError')
-        dispatch(actionError({
-            'code' : '',
-            'message' : ''
-        }));        
-    },
-
-    loadCoupon(response){
-        dispatch(actionCoupons(response.data.coupons));
-    },
 
     handlerOnAuthenticate(result, props){
 
@@ -91,11 +70,6 @@ const mapDispatchToProps = dispatch => {
             'photoURL' : result.user.providerData[0].photoURL,
         }));
 
-        dispatch(actionError({
-            'code' : '',
-            'message' : ''
-        }));
-
         dispatch(actionAuthenticate('LOGIN'));
         
 
@@ -104,17 +78,6 @@ const mapDispatchToProps = dispatch => {
         
 
     },
-    
-    /**
-     * Error en login de facebook 
-     */
-    handleOnError(e){
-        dispatch(actionError({
-            'code' : e.code,
-            'message' : e.message
-        }));
-       
-    }
 
   }
 }

@@ -8,6 +8,7 @@ import IconButton from 'material-ui/IconButton';
 import MenuIcon from 'material-ui-icons/Menu';
 import ChevronLeftIcon from 'material-ui-icons/ChevronLeft';
 import Drawer from 'material-ui/Drawer';
+import Grid from 'material-ui/Grid';
 import List, { ListItem, ListItemIcon, ListItemText } from 'material-ui/List';
 import Divider from 'material-ui/Divider';
 import style from '../templates/material/ButtonAppBar.css'
@@ -40,7 +41,8 @@ class ButtonAppBar extends Component{
 
   render(){
     return (
-        <div>
+      <Grid container spacing={0}>
+        <Grid item xs={12}  className = 'home__paper-login'>
           <Drawer className='buttonAppBar__drawer' open={ this.state.drawer.open } anchor={ this.state.drawer.anchor } type='temporary' onRequestClose={this.toggleDrawer(false)}>
             <div className='buttonAppBar__coontainer-list' tabIndex={0} role="button" onClick={this.toggleDrawer(false)}>
               <List className='buttonAppBar__list'>
@@ -73,7 +75,8 @@ class ButtonAppBar extends Component{
               </Typography>
             </Toolbar>
           </AppBar>
-        </div>
+        </Grid>
+      </Grid>
     );
   }
 
