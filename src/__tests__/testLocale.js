@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import Upload from '../components/Upload';
-import Locale from '../class/Locale';
+import Locale from '../scaffold/Locale';
 import es from '../locale/es'
 import en from '../locale/en'
 

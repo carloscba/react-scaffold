@@ -4,42 +4,44 @@ import style from '../templates/routes/Authenticate.css'
 import Working from '../components/Working'
 //Redux
 import { connect } from 'react-redux'
-import { actionCredential, actionAuthenticate, actionUser, actionError } from '../store/actions'
+import { actionCredential, actionAuthenticate, actionUser } from '../store/actions'
 
 //Firebase
 import * as firebase from 'firebase'
-import firebaseConfig from '../config/firebaseConfig'
+import firebaseConfig from '../config/firebase'
 
 firebase.initializeApp(firebaseConfig)
 
 class Callback extends Component{
     constructor(){
         super();
-        
-        if (document.referrer.indexOf('?code=') > -1) {
-            //Si llego desde firebase proceso la información
-            firebase.auth().getRedirectResult().then(function(result) {
-                
-                if (result.credential) {
-                    this.props.handlerOnAuthenticate(result, this.props)                
-                }
+        if(window.location.protocol === 'https'){
+            if (document.referrer.indexOf('?code=') > -1) {
+                //Si llego desde firebase proceso la información
+                firebase.auth().getRedirectResult().then(function(result) {
+                    
+                    if (result.credential) {
+                        this.props.handlerOnAuthenticate(result, this.props)                
+                    }
 
-            }.bind(this))
-            .catch(function(error) {
-                
-                console.log('error', error)
+                }.bind(this))
+                .catch(function(error) {
+                    
+                    console.log('error', error)
 
-            }.bind(this));            
+                }.bind(this));            
 
+            }else{
+                //Si no llego desde firebase inicio proceso de login
+                const provider = new firebase.auth.FacebookAuthProvider();
+                provider.setCustomParameters({
+                    'display' : 'page',
+                });
+
+                const signin = firebase.auth().signInWithRedirect(provider);   
+            }
         }else{
-
-            //Si no llego desde firebase inicio proceso de login
-            const provider = new firebase.auth.FacebookAuthProvider();
-            provider.setCustomParameters({
-                'display' : 'page',
-            });
-
-            const signin = firebase.auth().signInWithRedirect(provider);   
+            alert('You need a https domain')
         }
    
     }
@@ -47,9 +49,6 @@ class Callback extends Component{
     render(){
         return(
             <div className='row home'>
-                <div className='col-xs-12'>
-                    <img className='home__chicknshare' src={ require('../images/chicknshare_logo.png') } alt='ChicknShare' />
-                </div>
                 <div className='home__working'><Working isWorking /></div>
             </div>
 
@@ -64,18 +63,6 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
   return {
     
-    clearError(){
-        console.log('clearError')
-        dispatch(actionError({
-            'code' : '',
-            'message' : ''
-        }));        
-    },
-
-    loadCoupon(response){
-        dispatch(actionCoupons(response.data.coupons));
-    },
-
     handlerOnAuthenticate(result, props){
 
         //Set initial state
@@ -91,28 +78,15 @@ const mapDispatchToProps = dispatch => {
             'photoURL' : result.user.providerData[0].photoURL,
         }));
 
-        dispatch(actionError({
-            'code' : '',
-            'message' : ''
-        }));
-
         dispatch(actionAuthenticate('LOGIN'));
-        
 
         props.history.push('/');
-
-        
-
     },
     
     /**
      * Error en login de facebook 
      */
     handleOnError(e){
-        dispatch(actionError({
-            'code' : e.code,
-            'message' : e.message
-        }));
        
     }
 

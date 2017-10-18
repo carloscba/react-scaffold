@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { BrowserRouter as Redirect } from 'react-router-dom'
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import Locale from '../class/Locale';
+import Locale from '../scaffold/Locale';
 import { connect } from 'react-redux'
 
 class Terms extends Component{

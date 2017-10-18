@@ -13,9 +13,37 @@ export function actionAuthenticate(type){
     }
 }
 
+export function actionLocale(data){
+    return {
+        type: 'locale.UPDATE',
+        payload: data
+    }
+}
+
 export function actionUser(data){
     return {
         type: 'user.UPDATE',
+        payload: data
+    }
+}
+
+export function actionError(data){
+    return {
+        type: 'error.UPDATE',
+        payload: data
+    }
+}
+
+export function actionMarket(data){
+    return {
+        type: 'market.UPDATE',
+        payload: data
+    }
+}
+
+export function actionUtm(data){
+    return {
+        type: 'utm.UPDATE',
         payload: data
     }
 }

@@ -27,13 +27,15 @@
       <meta property="og:title"         content="Your Website Title" />
       <meta property="og:description"   content="Your description" />
       <meta property="og:image"         content="http://www.your-domain.com/path/image.jpg" />    
-      <script src="./modernizr.js" async></script>
   </head>
   <body>
     <script>
+      window.env = 'dev';
+      window.appId = (window.env === 'dev') ? '274577893018994' : '442705076123408'
+
       window.fbAsyncInit = function() {
         FB.init({
-          appId            : '103842260222273',
+          appId            : window.appId,
           autoLogAppEvents : true,
           xfbml            : true,
           version          : 'v2.9'
@@ -55,8 +57,5 @@
       You need to enable JavaScript to run this app.
     </noscript>
     <div id="root"></div>
-    <script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-
   </body>
 </html>

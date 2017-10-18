@@ -2,6 +2,7 @@ import { createStore, applyMiddleware } from 'redux'
 import appReducer from './reducers'
 
 const myMiddleware = store => next => action => {
+    
     let result;
     result = next(action);
     return result

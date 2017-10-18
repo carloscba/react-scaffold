@@ -1,6 +1,6 @@
 {
     "isAuthenticated" : false,
-    "locale" : "en",
+    "locale" : "es",
     "credential" : {
         "accessToken" : "",
         "providerId" : ""
@@ -10,5 +10,15 @@
         "email" : "",
         "photoURL" : "",
         "uid" : ""
-    }
+    },
+    "error" : {
+        "code" : "",
+        "message" : ""
+    },
+    "market" : {
+        "locale" : "es",
+        "code" : "wr",
+        "promotion" : "default"
+    },
+    "utm" : ""
 }

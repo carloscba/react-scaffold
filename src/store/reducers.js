@@ -12,6 +12,9 @@ function isAuthenticated(state = false, action){
                 state =  action.payload;
             }        
         break;        
+        default:
+            state = '';
+        break;
     }
     return state; 
 }
@@ -21,6 +24,9 @@ function locale(state = '', action){
         case 'locale.UPDATE':
             state = (typeof(action.payload) === 'string') ? action.payload : state.locale;
         break
+        default:
+            state = '';
+        break;
     }
     return state;
 }
@@ -32,7 +38,14 @@ function credential(state = {
     switch(action.type){   
         case 'credential.UPDATE':
             state = action.payload;
-        break        
+        break;
+        default:
+            state = {
+                "accessToken" : "",
+                "providerId" : ""
+            };
+        break;
+
     }
     return state;
 }
@@ -52,9 +65,42 @@ function user(state = {
     return state; 
 }
 
+function error(state = {
+    "code" : "",
+    "description" : "",
+}, action){
+    if(action.type === 'error.UPDATE'){
+        if(typeof(action.payload) === 'object'){
+            state =  action.payload;
+        }
+    }
+    return state; 
+}
+
+function market(state = {}, action){
+    if(action.type === 'market.UPDATE'){
+        if(typeof(action.payload) === 'object'){
+            state =  action.payload;
+        }
+    }
+    return state; 
+}
+
+function utm(state = {}, action){
+    if(action.type === 'utm.UPDATE'){
+        if(typeof(action.payload) === 'string'){
+            state =  action.payload;
+        }
+    }
+    return state; 
+}
+
 export default combineReducers({
     isAuthenticated,
     locale,
     credential,
-    user
+    user,
+    error,
+    market,
+    utm
 });
