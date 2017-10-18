@@ -5,7 +5,8 @@ import Working from '../components/Working'
 //Redux
 import { connect } from 'react-redux'
 import { actionCredential, actionAuthenticate, actionUser } from '../store/actions'
-
+//API
+import User from '../api/User'
 //Firebase
 import * as firebase from 'firebase'
 import firebaseConfig from '../config/firebase'
@@ -15,7 +16,7 @@ firebase.initializeApp(firebaseConfig)
 class Callback extends Component{
     constructor(){
         super();
-        if(window.location.protocol === 'https'){
+        if(window.location.protocol === 'https:'){
             if (document.referrer.indexOf('?code=') > -1) {
                 //Si llego desde firebase proceso la información
                 firebase.auth().getRedirectResult().then(function(result) {

@@ -2,6 +2,8 @@ import React, { Component } from 'react'
 import { BrowserRouter as Router, Route, link } from 'react-router-dom'
 import { connect } from 'react-redux'
 
+import style from '../lib/bootstrap.css'
+
 //Components
 import Menu from '../components/Menu'
 

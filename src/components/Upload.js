@@ -1,28 +1,21 @@
 import React, { Component } from 'react';
 import * as firebase from 'firebase';
-import firebaseConfig from '../config/firebaseConfig';
-import Progressbar from './Progressbar';
 import PropTypes from 'prop-types';
 import style from '../templates/components/Upload.css';
 
-const propTypes = {
-    onupload : PropTypes.func
-};
-
-const defaultProps = {
-    onupload : null
-};
-
+/**
+ * 
+ */
 class Upload extends Component{
 
     constructor(){
         super();
 
         this.state = {
+            current : 'WAITING', //UPLOADING|UPLOADED|WAITING
             uploading : false,
             acceptFile : '',
-            percentLoaded : 0,
-            uploadPath : ''
+            firebasePath : '' //URL of file on firebase
         }
         
         this.handleFiles = this.handleFiles.bind(this);
@@ -35,25 +28,28 @@ class Upload extends Component{
         try{
             file = newFile.target.files[0];
         }catch(e){
-            console.log('error on select file');
+            //console.log('error on select file');
         }
 
         if(typeof(file) !== 'undefined'){
-            var storageRef = firebase.storage().ref();
             
+            var storageRef = firebase.storage().ref();
+            (this.props.onStartUpload) ? this.props.onStartUpload() : null;
             //UPLOAD script
             this.setState({
                 uploading : true
             })
+            //WORKING
+            
+
             var uploadTask = storageRef.child(`video/${ Date.now() }.webm`).put(file);
 
             uploadTask.on('state_changed', function (snapshot) {
                 
                 let currentPercent = Math.round((100 * snapshot.bytesTransferred)/snapshot.totalBytes);
                 
-                this.setState({
-                    percentLoaded : currentPercent
-                })
+                (this.props.getPercent) ? this.props.getPercent(currentPercent) : null;
+
 
             }.bind(this), function (error) {
                 
@@ -67,7 +63,7 @@ class Upload extends Component{
 
                 this.setState({
                     uploading : false,
-                    uploadPath : downloadURL
+                    firebasePath : downloadURL
                 });
                 
             }.bind(this)); 
@@ -77,24 +73,29 @@ class Upload extends Component{
     renderUploadInput(){
 
         let uploadLayout;
-        if(this.state.uploadPath === ''){
-
-            if(!this.state.uploading){
-                uploadLayout = <div><input type="file" accept = { this.state.acceptFile } id="input" className="fileInput" /><button id="btnUpload" className="btn btn-primary btn-block">{ this.props.children }</button></div>
+        if(this.state.firebasePath === ''){
+            if(this.state.current === 'WAITING'){
+                uploadLayout = (
+                    <div>
+                        <input type="file" accept = { this.state.acceptFile } id="input" className="fileInput" />
+                        <button className='upload__button' id='btnUpload'>{ this.props.children }</button>
+                    </div>
+                );
             }else{
-                uploadLayout = <div><Progressbar working percent = { this.state.percentLoaded }/></div>
+                uploadLayout = ''
             }
 
         }else{
-            switch(this.state.acceptFile){
-                case 'image/*':
-                    uploadLayout = <div><img src = { this.state.uploadPath } className="img-upload" /></div>
-                    break;
-                default:
-                    uploadLayout = <div>{ this.state.uploadPath }</div>
-                    break;
+            if(this.props.preview){
+                switch(this.state.acceptFile){
+                    case 'image/*':
+                        uploadLayout = <div><img src = { this.state.firebasePath } className="img-upload" /></div>
+                        break;
+                    default:
+                        uploadLayout = <div>{ this.state.firebasePath }</div>
+                        break;
+                }
             }
-            
         }
 
 
@@ -125,7 +126,7 @@ class Upload extends Component{
     }
 
     onUpload(path){
-        this.props.onupload(path);
+        (this.props.onUpload) ? this.props.onUpload(path) : null;
     }
 
     render(){
@@ -146,7 +147,18 @@ class Upload extends Component{
     }
 }
 
-Upload.propTypes = propTypes;
-Upload.defaultProps = defaultProps;
+Upload.propTypes = {
+    onStartUpload : PropTypes.func,
+    getPercent : PropTypes.func,
+    onUpload : PropTypes.func,
+    preview : PropTypes.bool,
+};
+
+Upload.defaultProps = {
+    onStartUpload : null,
+    getPercent : null,
+    onUpload : null,
+    preview : true
+};
 
 export default Upload;

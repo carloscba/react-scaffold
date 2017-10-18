@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
+import { BrowserRouter as Redirect } from 'react-router-dom'
 import Style from '../templates/routes/Share.css';
-import Fbpost from '../components/Fbpost';
-import jquery from 'jquery'
+import Locale from '../scaffold/Locale'
 
 class Share extends Component{
 
@@ -10,11 +10,16 @@ class Share extends Component{
     }
 
     render(){
+        const copy = new Locale().get('Home', this.props.locale);
+
+        if(!this.props.isAuthenticated){
+            return(<Redirect from="/terms" to="/" />)
+        } 
+
         return(
             <div className="row">
                 <div className="col-xs-12">
-                    <video className="videoResult" src={ `https://kfc.data-m8agency.com/videos_results/${ this.props.match.params.video }.mp4` } width="320" height="240" controls></video>
-                    <Fbpost type="videos" url={ `https://kfc.data-m8agency.com/videos_results/${ this.props.match.params.video }.mp4` } title="KFC Chizza" description="Video desde chizza" />
+                    Share
                 </div>
             </div>
         )
