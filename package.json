@@ -17,6 +17,7 @@
     "react-router-dom": "^4.1.1",
     "redux": "^3.7.2",
     "url-loader": "^0.5.9",
+    "validatorjs": "^3.13.5",
     "winston": "^2.3.1"
   },
   "devDependencies": {

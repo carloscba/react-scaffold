@@ -40,7 +40,7 @@ class Home extends Component{
                     }>Change locale</button></li>
                 </ul>
                 <div className='col-xs-12 col-md-12 col-lg-12 col-xl-12'>
-                    <h2 className='home__h2'>{ copy.title }</h2>
+                    { copy.title }
                     { ( this.props.store.isAuthenticated ) 
                     ? layoutStart 
                     : <Link to='authenticate'>Authenticate</Link> }
