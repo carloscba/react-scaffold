@@ -7,7 +7,7 @@ import Working from '../components/Working'
 import { connect } from 'react-redux'
 import getDispatchs from '../store/dispatchs'
 //Scaffold
-import Error from '../scaffold/Error'
+import manageError from '../scaffold/Error'
 //Firebase
 import * as firebase from 'firebase'
 import app from '../config/app'
@@ -18,24 +18,19 @@ class Authenticate extends Component{
     constructor(){
         super();
     }
-
+    
     componentWillMount(){
-
         if(window.location.protocol === 'https:'){
-            
             if (document.referrer.indexOf('?code=') > -1) {
                 //Si llego desde firebase proceso la información
                 firebase.auth().getRedirectResult().then(function(result) {
                     if (result.credential) {
-                        
-                        this.props.handlerIsAuthenticate('LOGIN');
-
+                        this.props.handlerIsAuthenticate(true);
+                        this.props.history.push(`/`);
                     }
                 }.bind(this))
                 .catch(function(error) {
-                    
-                    Error(error);
-
+                    manageError(error);
                 }.bind(this));            
 
             }else{
@@ -46,12 +41,10 @@ class Authenticate extends Component{
                 });
                 const signin = firebase.auth().signInWithRedirect(provider);   
             }
-
         }else{
             alert('You need a https domain')
             this.props.history.push(`/`);
         }        
-
     }
 
     render(){
@@ -59,10 +52,8 @@ class Authenticate extends Component{
             <div className='row home'>
                 <div className='home__working'><Working isWorking /></div>
             </div>
-
         )
     }
-
 }
 
 const mapStateToProps = state => {
@@ -71,7 +62,6 @@ const mapStateToProps = state => {
     }
 }
 const mapDispatchToProps = dispatch => {
-  return getDispatchs()
+  return getDispatchs(dispatch)
 }
-
 export default connect(mapStateToProps, mapDispatchToProps)(Authenticate);

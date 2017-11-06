@@ -1,19 +1,12 @@
 import { combineReducers } from 'redux'
 
 function isAuthenticated(state = false, action){
-    if(action.payload === 'LOGIN' || action.payload === 'LOGOUT'){
-        switch(action.type){
-            case 'isAuthenticated.LOGIN':
-                state =  action.payload;
-            break;
-            case 'isAuthenticated.LOGOUT':
-                state =  action.payload;
-            break;
-        }
-        return state; 
-    }else{
-        return state; 
+    switch(action.type){   
+        case 'isAuthenticated':
+            state = action.payload;
+        break;
     }
+    return state; 
 }
 
 function locale(state = 'es', action){

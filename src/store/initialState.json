@@ -11,10 +11,6 @@
         "photoURL" : "",
         "uid" : ""
     },
-    "error" : {
-        "code" : "",
-        "message" : ""
-    },
     "market" : {
         "locale" : "es",
         "code" : "wr",

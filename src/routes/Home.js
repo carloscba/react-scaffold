@@ -20,6 +20,12 @@ class Home extends Component{
                 <img src={ this.props.store.user.photoURL } className='user-data__photo' />
                 <span className='user-data__name'>{ this.props.store.user.displayName }</span>
                 <a className='user-data__button' onClick={ this.start } >Continuar</a>
+                <button onClick={ 
+                        function(){
+                            console.log(this.props)
+                            this.props.handlerIsAuthenticate(false);
+                        }.bind(this)
+                }>Logout</button>                
             </div>
         );
 
@@ -35,7 +41,9 @@ class Home extends Component{
                 </ul>
                 <div className='col-xs-12 col-md-12 col-lg-12 col-xl-12'>
                     <h2 className='home__h2'>{ copy.title }</h2>
-                    { ( this.props.store.isAuthenticated ) ? layoutStart : <Link to='authenticate'>Authenticate</Link> }
+                    { ( this.props.store.isAuthenticated ) 
+                    ? layoutStart 
+                    : <Link to='authenticate'>Authenticate</Link> }
                 </div>
             </div>
         )

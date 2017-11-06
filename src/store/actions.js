@@ -1,7 +1,7 @@
 export function actionIsAuthenticated(status){
     return {
-        type: 'isAuthenticated.'+ status,
-        payload: (status === 'LOGIN')
+        type: 'isAuthenticated',
+        payload: status
     }
 }
 
@@ -18,8 +18,6 @@ export function actionCredential(credential){
         payload: credential
     }    
 }
-
-
 
 export function actionUser(data){
     return {
