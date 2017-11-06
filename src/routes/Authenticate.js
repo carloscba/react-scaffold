@@ -2,33 +2,39 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import style from '../templates/routes/Authenticate.css'
 import Working from '../components/Working'
+
 //Redux
 import { connect } from 'react-redux'
-import { actionCredential, actionAuthenticate, actionUser } from '../store/actions'
-//API
-import User from '../api/User'
+import getDispatchs from '../store/dispatchs'
+//Scaffold
+import Error from '../scaffold/Error'
 //Firebase
 import * as firebase from 'firebase'
-import firebaseConfig from '../config/firebase'
+import app from '../config/app'
 
-firebase.initializeApp(firebaseConfig)
+firebase.initializeApp(app.firebase)
 
-class Callback extends Component{
+class Authenticate extends Component{
     constructor(){
         super();
+    }
+
+    componentWillMount(){
+
         if(window.location.protocol === 'https:'){
+            
             if (document.referrer.indexOf('?code=') > -1) {
                 //Si llego desde firebase proceso la información
                 firebase.auth().getRedirectResult().then(function(result) {
-                    
                     if (result.credential) {
-                        this.props.handlerOnAuthenticate(result, this.props)                
-                    }
+                        
+                        this.props.handlerIsAuthenticate('LOGIN');
 
+                    }
                 }.bind(this))
                 .catch(function(error) {
                     
-                    console.log('error', error)
+                    Error(error);
 
                 }.bind(this));            
 
@@ -38,13 +44,14 @@ class Callback extends Component{
                 provider.setCustomParameters({
                     'display' : 'page',
                 });
-
                 const signin = firebase.auth().signInWithRedirect(provider);   
             }
+
         }else{
             alert('You need a https domain')
-        }
-   
+            this.props.history.push(`/`);
+        }        
+
     }
 
     render(){
@@ -59,39 +66,12 @@ class Callback extends Component{
 }
 
 const mapStateToProps = state => {
-    return state
+    return {
+        store : state
+    }
 }
 const mapDispatchToProps = dispatch => {
-  return {
-    
-    handlerOnAuthenticate(result, props){
-
-        //Set initial state
-        dispatch(actionCredential({
-            'accessToken' : result.credential.accessToken,
-            'providerId' : result.credential.providerId
-        }))
-
-        dispatch(actionUser({
-            'uid' : result.user.providerData[0].uid,
-            'displayName' : result.user.providerData[0].displayName,
-            'email' : result.user.providerData[0].email,
-            'photoURL' : result.user.providerData[0].photoURL,
-        }));
-
-        dispatch(actionAuthenticate('LOGIN'));
-
-        props.history.push('/');
-    },
-    
-    /**
-     * Error en login de facebook 
-     */
-    handleOnError(e){
-       
-    }
-
-  }
+  return getDispatchs()
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(Callback);
+export default connect(mapStateToProps, mapDispatchToProps)(Authenticate);

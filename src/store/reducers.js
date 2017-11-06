@@ -1,75 +1,57 @@
 import { combineReducers } from 'redux'
 
 function isAuthenticated(state = false, action){
-    switch(action.type){
-        case 'isAuthenticated.LOGIN':
-            if(typeof(action.payload) === 'boolean'){
+    if(action.payload === 'LOGIN' || action.payload === 'LOGOUT'){
+        switch(action.type){
+            case 'isAuthenticated.LOGIN':
                 state =  action.payload;
-            }        
-        break;
-        case 'isAuthenticated.LOGOUT':
-            if(typeof(action.payload) === 'boolean'){
+            break;
+            case 'isAuthenticated.LOGOUT':
                 state =  action.payload;
-            }        
-        break;        
-        default:
-            state = '';
-        break;
+            break;
+        }
+        return state; 
+    }else{
+        return state; 
     }
-    return state; 
 }
 
-function locale(state = '', action){
-    switch(action.type){
-        case 'locale.UPDATE':
-            state = (typeof(action.payload) === 'string') ? action.payload : state.locale;
-        break
-        default:
-            state = '';
-        break;
+function locale(state = 'es', action){
+    if(action.payload === 'es' || action.payload === 'en'){
+        switch(action.type){
+            case 'locale.UPDATE':
+                state = action.payload;
+            break
+        }
+        return state; 
+    }else{
+        return state;
     }
-    return state;
 }
 
 function credential(state = {
-    "accessToken" : "",
-    "providerId" : ""
+    'accessToken' : '',
+    'providerId' : ''
 }, action){
-    switch(action.type){   
-        case 'credential.UPDATE':
-            state = action.payload;
-        break;
-        default:
-            state = {
-                "accessToken" : "",
-                "providerId" : ""
-            };
-        break;
-
+    if(typeof(action.payload) === 'object'){
+        switch(action.type){   
+            case 'credential.UPDATE':
+                state = action.payload;
+            break;
+        }
+        return state;
+    }else{
+        return state;
     }
-    return state;
 }
-
 
 function user(state = {
-    "displayName" : "",
-    "email" : "",
-    "photoURL" : "",
-    "uid" : ""
+    'displayName' : '',
+    'email' : '',
+    'photoURL' : '',
+    'uid' : ''
 }, action){
     if(action.type === 'user.UPDATE'){
-        if(typeof(action.payload) === 'object'){
-            state =  action.payload;
-        }
-    }
-    return state; 
-}
-
-function error(state = {
-    "code" : "",
-    "description" : "",
-}, action){
-    if(action.type === 'error.UPDATE'){
         if(typeof(action.payload) === 'object'){
             state =  action.payload;
         }
@@ -100,7 +82,6 @@ export default combineReducers({
     locale,
     credential,
     user,
-    error,
     market,
     utm
 });

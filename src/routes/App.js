@@ -1,18 +1,16 @@
 import React, { Component } from 'react'
 import { BrowserRouter as Router, Route, link } from 'react-router-dom'
+//Redux
 import { connect } from 'react-redux'
-
+import getDispatchs from '../store/dispatchs'
+//Styles
 import style from '../lib/bootstrap.css'
-
 //Components
 import Menu from '../components/Menu'
-
 //Routes
 import Home from './Home'
 import Authenticate from './Authenticate'
-import Share from './Share'
 import Terms from './Terms'
-
 
 class App extends Component{
     
@@ -24,7 +22,7 @@ class App extends Component{
         return(
             <Router>
                 <div>
-                    <Menu />
+                    <Menu state = { this.props } />
                     <div className='container-fluid'>
                         <Route exact path='/' component={ Home }/>
                         <Route path='/authenticate' component={ Authenticate } />
@@ -38,7 +36,13 @@ class App extends Component{
 }
 
 const mapStateToProps = state => {
-    return state
+    return {
+        store : state
+    }
 }
 
-export default connect(mapStateToProps)(App);
+const mapDispatchToProps = dispatch => {
+    return getDispatchs(dispatch)
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);

@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
-import { BrowserRouter as Redirect } from 'react-router-dom'
-import { Link } from 'react-router-dom';
-import PropTypes from 'prop-types';
-import Locale from '../scaffold/Locale';
+import { Link, BrowserRouter as Redirect } from 'react-router-dom'
+//Redux
 import { connect } from 'react-redux'
+import getDispatchs from '../store/dispatchs'
+//Scaffold
+import Locale from '../scaffold/Locale';
 
 class Terms extends Component{
 
@@ -15,7 +16,7 @@ class Terms extends Component{
 
     render(){
         
-        if(!this.props.isAuthenticated){
+        if(!this.props.store.isAuthenticated){
             return(<Redirect from="/terms" to="/" />)
         } 
 
@@ -33,7 +34,13 @@ class Terms extends Component{
 }
 
 const mapStateToProps = state => {
-    return state
+    return {
+        store : state
+    }
 }
 
-export default connect(mapStateToProps)(Terms);
+const mapDispatchToProps = dispatch => {
+    return getDispatchs(dispatch)
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Terms);

@@ -1,4 +1,16 @@
-import axios from 'axios'
+export function actionIsAuthenticated(status){
+    return {
+        type: 'isAuthenticated.'+ status,
+        payload: (status === 'LOGIN')
+    }
+}
+
+export function actionLocale(locale){
+    return {
+        type: 'locale.UPDATE',
+        payload: locale
+    }
+}
 
 export function actionCredential(credential){
     return {
@@ -6,30 +18,12 @@ export function actionCredential(credential){
         payload: credential
     }    
 }
-export function actionAuthenticate(type){
-    return {
-        type: 'isAuthenticated.'+ type,
-        payload: (type === 'LOGIN')
-    }
-}
 
-export function actionLocale(data){
-    return {
-        type: 'locale.UPDATE',
-        payload: data
-    }
-}
+
 
 export function actionUser(data){
     return {
         type: 'user.UPDATE',
-        payload: data
-    }
-}
-
-export function actionError(data){
-    return {
-        type: 'error.UPDATE',
         payload: data
     }
 }

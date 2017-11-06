@@ -30,7 +30,7 @@
   <body>
     <script>
       window.env = 'dev';
-      window.appId = (window.env === 'dev') ? '274577893018994' : '442705076123408'
+      window.appId = (window.env === 'dev') ? '103842260222273' : ''
 
       window.fbAsyncInit = function() {
         FB.init({
@@ -41,8 +41,12 @@
         });
         FB.AppEvents.logPageView();
       };
-
-   
+      
+      window.trackFb = function(eventName, contentName){
+        fbq('track', eventName, {
+          content_name: contentName,
+        });
+      }
 
       (function(d, s, id){
         var js, fjs = d.getElementsByTagName(s)[0];

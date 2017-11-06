@@ -6,7 +6,7 @@ const prod = {
 }
 //DEV
 const dev = {
-    appId : '274577893018994',
+    appId : '103842260222273',
     callback : '/home',
     firebase : {
         apiKey: "AIzaSyAyrAm4BA3BdROJILFf11QxK9DcZ_lPrRw",
