@@ -10,6 +10,7 @@
     "npm-run-all": "^4.0.2",
     "prop-types": "^15.5.10",
     "react": "^15.5.4",
+    "react-cropper": "^1.0.1",
     "react-dom": "^15.5.4",
     "react-owl-carousel": "^2.2.0",
     "react-redux": "^5.0.5",
