@@ -10,6 +10,7 @@ import Menu from '../components/Menu'
 //Routes
 import Home from './Home'
 import Authenticate from './Authenticate'
+import Upload from './Upload'
 import Terms from './Terms'
 
 class App extends Component{
@@ -26,6 +27,7 @@ class App extends Component{
                     <div className='container-fluid'>
                         <Route exact path='/' component={ Home }/>
                         <Route path='/authenticate' component={ Authenticate } />
+                        <Route path='/upload' component={ Upload } />
                         <Route path='/terms' component={ Terms } />
                     </div>
                 </div>

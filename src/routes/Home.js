@@ -5,7 +5,6 @@ import { connect } from 'react-redux'
 import getDispatchs from '../store/dispatchs'
 //Scaffold
 import Locale from '../scaffold/Locale';
-import ReactScaffoldUpload from '../components/ReactScaffoldUpload'
 
 class Home extends Component{
 
@@ -45,9 +44,6 @@ class Home extends Component{
                     { ( this.props.store.isAuthenticated ) 
                     ? layoutStart 
                     : <Link to='authenticate'>Authenticate</Link> }
-                </div>
-                <div>
-                    <ReactScaffoldUpload />
                 </div>
             </div>
         )

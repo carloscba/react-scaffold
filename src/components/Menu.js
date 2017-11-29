@@ -23,6 +23,7 @@ class Menu extends Component{
                                 this.props.state.handlerLocale(newLocale);
                             }.bind(this)
                         }>Change locale</button></li>
+                        <li><a href="/upload">Upload</a></li>
                         <li><a href="/terms">Terms</a></li>
                         <li><a href="/test">Test</a></li>
                         { (this.props.isAuthenticated) ?  <li><a href="/terms">Url Proteted</a></li> : null }
