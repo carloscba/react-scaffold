@@ -16,5 +16,7 @@
         "code" : "wr",
         "promotion" : "default"
     },
+    "currentPath" : "",
+    "currentPage" : "",
     "utm" : ""
 }

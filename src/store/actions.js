@@ -33,6 +33,20 @@ export function actionMarket(data){
     }
 }
 
+export function actionCurrentPath(data){
+    return {
+        type: 'currentPath.UPDATE',
+        payload: data
+    }
+}
+
+export function actionCurrentPage(data){
+    return {
+        type: 'currentPage.UPDATE',
+        payload: data
+    }
+}
+
 export function actionUtm(data){
     return {
         type: 'utm.UPDATE',

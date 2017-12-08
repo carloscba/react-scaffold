@@ -1,5 +1,6 @@
 import es from '../locale/es';
 import en from '../locale/en';
+import pt from '../locale/pt';
 
 class Locale{
     constructor	(){
@@ -13,6 +14,9 @@ class Locale{
             break;
             case 'es':
                 this.copy = es;
+            break;
+            case 'pt':
+                this.copy = pt;
             break;
             default:
                 this.copy = es;

@@ -10,16 +10,14 @@ function isAuthenticated(state = false, action){
 }
 
 function locale(state = 'es', action){
-    if(action.payload === 'es' || action.payload === 'en'){
-        switch(action.type){
-            case 'locale.UPDATE':
-                state = action.payload;
-            break
-        }
-        return state; 
-    }else{
-        return state;
+    
+    switch(action.type){
+        case 'locale.UPDATE':
+            state = action.payload;
+        break
     }
+    return state; 
+    
 }
 
 function credential(state = {
@@ -61,6 +59,24 @@ function market(state = {}, action){
     return state; 
 }
 
+function currentPath(state = {}, action){
+    if(action.type === 'currentPath.UPDATE'){
+        if(typeof(action.payload) === 'string'){
+            state =  action.payload;
+        }
+    }
+    return state; 
+}
+
+function currentPage(state = {}, action){
+    if(action.type === 'currentPage.UPDATE'){
+        if(typeof(action.payload) === 'string'){
+            state =  action.payload;
+        }
+    }
+    return state; 
+}
+
 function utm(state = {}, action){
     if(action.type === 'utm.UPDATE'){
         if(typeof(action.payload) === 'string'){
@@ -76,5 +92,7 @@ export default combineReducers({
     credential,
     user,
     market,
+    currentPath,
+    currentPage,
     utm
 });

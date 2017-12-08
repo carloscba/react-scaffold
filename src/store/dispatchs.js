@@ -1,5 +1,5 @@
 import { connect } from 'react-redux'
-import {actionIsAuthenticated, actionLocale, actionCredential } from '../store/actions'
+import {actionIsAuthenticated, actionLocale, actionCredential, actionCurrentPath, actionCurrentPage } from '../store/actions'
 
 export default function getDispatchs(dispatch){
     return {
@@ -10,7 +10,13 @@ export default function getDispatchs(dispatch){
             dispatch(actionLocale(locale))
         },
         handlerCredential(credentials){
-            actionCredential(credentials)
+            dispatch(actionCredential(credentials))
+        },
+        handlerCurrentPath(currentPath){
+            dispatch(actionCurrentPath(currentPath))
+        },
+        handlerCurrentPage(currentPage){
+            dispatch(actionCurrentPage(currentPage))
         }
         /*,
         handlerOnAuthenticate(result, props){

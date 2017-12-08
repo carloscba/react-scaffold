@@ -25,10 +25,10 @@ class App extends Component{
                 <div>
                     <Menu state = { this.props } />
                     <div className='container-fluid'>
-                        <Route exact path='/' component={ Home }/>
-                        <Route path='/authenticate' component={ Authenticate } />
-                        <Route path='/upload' component={ Upload } />
-                        <Route path='/terms' component={ Terms } />
+                        <Route exact path='/:path' component={ Home }/>
+                        <Route path='/:path/authenticate' component={ Authenticate } />
+                        <Route path='/:path/upload' component={ Upload } />
+                        <Route path='/:path/terms' component={ Terms } />
                     </div>
                 </div>
             </Router>
